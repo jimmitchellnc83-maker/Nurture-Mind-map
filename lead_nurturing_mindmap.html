@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lead Nurturing Automation System - Interactive Mind Map</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>Lead Nurturing Lifecycle Automation System</title>
     <style>
         * {
             margin: 0;
@@ -15,1002 +14,908 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            overflow: hidden;
-            height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
         }
 
         #container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
-        #mindmap {
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            cursor: grab;
-        }
-
-        #mindmap:active {
-            cursor: grabbing;
-        }
-
-        /* Control Panel */
-        #controls {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            max-width: 300px;
-        }
-
-        #controls h3 {
-            margin-bottom: 10px;
+        h1 {
+            text-align: center;
             color: #2E86AB;
-            font-size: 16px;
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: 700;
         }
 
-        .control-group {
-            margin-bottom: 12px;
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 40px;
         }
 
-        .control-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 12px;
-            color: #333;
-            font-weight: 600;
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 13px;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #2E86AB;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 8px;
+        .controls button {
+            padding: 12px 24px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             background: #2E86AB;
             color: white;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        button:hover {
+        .controls button:hover {
             background: #1a5f7a;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        button:active {
-            transform: translateY(0);
+        /* Main Sections */
+        .section {
+            margin-bottom: 40px;
+            border-left: 6px solid #2E86AB;
+            padding-left: 25px;
+            transition: all 0.3s;
         }
 
-        .btn-secondary {
-            background: #4CAF50;
+        .section:hover {
+            border-left-width: 10px;
         }
 
-        .btn-secondary:hover {
-            background: #388E3C;
+        .section.properties { border-left-color: #2E86AB; }
+        .section.workflows { border-left-color: #A23B72; }
+        .section.checkpoint { border-left-color: #F18F01; }
+        .section.crm { border-left-color: #C73E1D; }
+        .section.safeguards { border-left-color: #592E83; }
+        .section.enhancements { border-left-color: #4CAF50; }
+
+        .section-header {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
         }
 
-        .btn-tertiary {
-            background: #F18F01;
+        .section-header:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-tertiary:hover {
-            background: #d67a00;
+        .section-header h2 {
+            font-size: 24px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .toggle-icon {
+            font-size: 18px;
+            color: #666;
+            transition: transform 0.3s;
+        }
+
+        .section.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            max-height: 3000px;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s;
+            opacity: 1;
+        }
+
+        .section.collapsed .section-content {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        /* Property Grid */
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .property-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .property-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #2E86AB;
+            transition: width 0.3s;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: #2E86AB;
+        }
+
+        .property-card:hover::before {
+            width: 100%;
+            opacity: 0.05;
+        }
+
+        .property-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2E86AB;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .property-type {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .property-desc {
+            color: #555;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        /* Workflow Cards */
+        .workflow-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .workflow-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .workflow-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .workflow-card.workflow-a {
+            background: linear-gradient(135deg, #2E86AB 0%, #1a5f7a 100%);
+        }
+
+        .workflow-card.workflow-b {
+            background: linear-gradient(135deg, #A23B72 0%, #7a1d54 100%);
+        }
+
+        .workflow-card.workflow-c {
+            background: linear-gradient(135deg, #F18F01 0%, #c97400 100%);
+        }
+
+        .workflow-card.workflow-d {
+            background: linear-gradient(135deg, #C73E1D 0%, #a02f15 100%);
+        }
+
+        .workflow-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .workflow-subtitle {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .workflow-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .workflow-details h4 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .workflow-details ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .workflow-details li {
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .workflow-details li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Flow Items */
+        .flow-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .flow-item {
+            background: white;
+            border-left: 5px solid #F18F01;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .flow-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .flow-item-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #F18F01;
+            margin-bottom: 10px;
+        }
+
+        .flow-item-desc {
+            color: #555;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        /* List Items */
+        .list-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .list-item {
+            background: white;
+            border-left: 5px solid currentColor;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .list-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .list-item-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .list-item-desc {
+            color: #555;
+            line-height: 1.6;
+            font-size: 15px;
         }
 
         /* Legend */
-        #legend {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            max-width: 280px;
-        }
-
-        #legend h3 {
-            margin-bottom: 10px;
-            color: #2E86AB;
-            font-size: 16px;
-            cursor: pointer;
+        .legend {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #legend h3::after {
-            content: '▼';
-            font-size: 12px;
-        }
-
-        #legend.collapsed h3::after {
-            content: '▶';
-        }
-
-        .legend-content {
-            max-height: 500px;
-            overflow: auto;
-            transition: max-height 0.3s ease;
-        }
-
-        #legend.collapsed .legend-content {
-            max-height: 0;
-            overflow: hidden;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 12px;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 10px;
-            border: 2px solid #333;
-        }
-
-        /* Instructions */
-        #instructions {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            max-width: 300px;
-        }
-
-        #instructions h3 {
-            margin-bottom: 10px;
-            color: #2E86AB;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #instructions h3::after {
-            content: '▼';
-            font-size: 12px;
-        }
-
-        #instructions.collapsed h3::after {
-            content: '▶';
-        }
-
-        .instructions-content {
-            max-height: 300px;
-            overflow: auto;
-            transition: max-height 0.3s ease;
-        }
-
-        #instructions.collapsed .instructions-content {
-            max-height: 0;
-            overflow: hidden;
-        }
-
-        #instructions ul {
-            list-style: none;
-            font-size: 12px;
-            line-height: 1.6;
-        }
-
-        #instructions li {
-            margin-bottom: 6px;
-            padding-left: 15px;
-            position: relative;
-        }
-
-        #instructions li::before {
-            content: '▸';
-            position: absolute;
-            left: 0;
-            color: #2E86AB;
-        }
-
-        /* Tooltips */
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 13px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-            max-width: 300px;
-            z-index: 2000;
-            line-height: 1.5;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .tooltip.show {
-            opacity: 1;
-        }
-
-        /* Node and Link Styles */
-        .link {
-            fill: none;
-            stroke: #999;
-            stroke-opacity: 0.6;
-            stroke-width: 2px;
-            transition: all 0.3s;
-        }
-
-        .link.highlighted {
-            stroke: #F18F01;
-            stroke-opacity: 1;
-            stroke-width: 3px;
-        }
-
-        .node circle {
-            stroke: #fff;
-            stroke-width: 2px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .node.highlighted circle {
-            stroke: #F18F01;
-            stroke-width: 4px;
-            filter: drop-shadow(0 0 10px #F18F01);
-        }
-
-        .node text {
-            font-size: 12px;
-            pointer-events: none;
-            text-anchor: middle;
-            dominant-baseline: middle;
-            fill: #fff;
-            font-weight: 600;
-        }
-
-        .node.central text {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .node.branch text {
+            gap: 10px;
             font-size: 14px;
             font-weight: 600;
         }
 
-        .node:hover circle {
-            filter: brightness(1.2) drop-shadow(0 0 8px rgba(0, 0, 0, 0.3));
-        }
-
-        .node.collapsed circle {
-            stroke-dasharray: 5, 5;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            #controls, #legend, #instructions {
-                max-width: 250px;
-                font-size: 11px;
-            }
-
-            button {
-                padding: 8px;
-                font-size: 12px;
-            }
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
         }
 
         /* Search Highlight */
-        .search-highlight {
-            animation: pulse 1s ease-in-out infinite;
+        .highlight {
+            background: yellow;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 700;
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
             }
-            50% {
-                opacity: 0.5;
+
+            #container {
+                box-shadow: none;
+            }
+
+            .controls {
+                display: none;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+
+            .section-content {
+                max-height: none !important;
+                opacity: 1 !important;
             }
         }
 
-        /* Loading Indicator */
-        #loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            color: #2E86AB;
-            z-index: 3000;
+        /* Responsive */
+        @media (max-width: 768px) {
+            #container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .property-grid,
+            .workflow-container {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header h2 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div id="container">
-        <svg id="mindmap"></svg>
-
-        <!-- Control Panel -->
-        <div id="controls">
-            <h3>🎮 Controls</h3>
-            <div class="control-group">
-                <label for="search">Search Nodes:</label>
-                <input type="text" id="search" placeholder="Type to search...">
-            </div>
-            <button id="resetView" class="btn-secondary">🔄 Reset View</button>
-            <button id="exportPNG" class="btn-tertiary">📷 Export as PNG</button>
-            <button id="expandAll">➕ Expand All</button>
-            <button id="collapseAll">➖ Collapse All</button>
-        </div>
+        <h1>🚀 Lead Nurturing Lifecycle Automation System</h1>
+        <p class="subtitle">Complete marketing automation platform with CRM integration and intelligent progression tracking</p>
 
         <!-- Legend -->
-        <div id="legend">
-            <h3>📊 Legend</h3>
-            <div class="legend-content">
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #2E86AB;"></div>
-                    <span>Core Properties</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #A23B72;"></div>
-                    <span>Automated Workflows</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #F18F01;"></div>
-                    <span>Checkpoint Logic</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #C73E1D;"></div>
-                    <span>CRM Synchronization</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #592E83;"></div>
-                    <span>Data Safeguards</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #4CAF50;"></div>
-                    <span>Advanced Enhancements</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #333333;"></div>
-                    <span>Central Node</span>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #2E86AB;"></div>
+                <span>Core Properties</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #A23B72;"></div>
+                <span>Automated Workflows</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #F18F01;"></div>
+                <span>Checkpoint Logic</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #C73E1D;"></div>
+                <span>CRM Sync</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #592E83;"></div>
+                <span>Safeguards</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4CAF50;"></div>
+                <span>Enhancements</span>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="🔍 Search content..." style="padding: 12px 20px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; width: 300px;">
+            <button onclick="expandAll()">➕ Expand All</button>
+            <button onclick="collapseAll()">➖ Collapse All</button>
+            <button onclick="window.print()">🖨️ Print / Save PDF</button>
+        </div>
+
+        <!-- Section 1: Core Properties -->
+        <div class="section properties">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>
+                    <div class="section-icon" style="background: #2E86AB;">1</div>
+                    Core Properties (10 Custom Fields)
+                </h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <p style="color: #666; margin-bottom: 20px; font-size: 16px;">Custom fields that manage nurture logic, progression tracking, and CRM alignment.</p>
+
+                <div class="property-grid">
+                    <div class="property-card">
+                        <div class="property-name">📊 track_current</div>
+                        <div class="property-type">Dropdown: Awareness, Research, Qualification, Hot</div>
+                        <div class="property-desc">Controls the active nurture stream for each contact. Determines which content track the contact is currently enrolled in based on their engagement level.</div>
+                    </div>
+
+                    <div class="property-card">
+                        <div class="property-name">📍 track_checkpoint</div>
+                        <div class="property-type">Number</div>
+                        <div class="property-desc">Stores the index of the next module to send within the current track. Enables contacts to resume exactly where they left off after pauses.</div>
+                    </div>
+
+                    <div class="property-card">
+                        <div class="property-name">🏆 highest_track_reached</div>
+                        <div class="property-type">Dropdown</div>
+                        <div class="property-desc">Prevents regression or restarts by recording the highest track a contact has entered. Ensures contacts never move backward in the nurture journey.</div>
+                    </div>
+
+                    <div class="property-card">
+                        <div class="property-name">⚙️ track_state</div>
+                        <div class="property-type">Dropdown: Active, Paused, Completed</div>
+                        <div class="property-desc">Determines whether nurture sequences are currently running. Controls the overall execution state of nurture automation for each contact.</div>
+                    </div>
+
+                    <div class="property-card">
+                        <div class="property-name">📝 track_reason</div>
+                        <div class="property-type">Text</div>
+                        <div class="property-desc">Documents why a track is paused, resumed, or changed. Provides audit trail and context for nurture status changes.</div>
+                    </div>
+
+                    <div class="property-card">
+                        <div class="property-name">🔄 crm_lifecycle_stage</div>
+                        <div class="property-type">Dropdown</div>
+                        <div class="property-desc">Mirrors the lifecycle status of the contact or account in the CRM. Keeps marketing automation synchronized with sales stages.</div>
+                    </div>
+
+                    <div class="property-card">
+                        <div class="property-name">💼 crm_open_opportunity</div>
+                        <div class="property-type">Boolean: Yes/No</div>
+                        <div class="property-desc">Indicates whether an active deal is associated with the contact. Used to pause nurture when sales is actively working the opportunity.</div>
+                    </div>
+
+                    <div class="property-card">
+                        <div class="property-name">📅 reentry_eligibility_date</div>
+                        <div class="property-type">Date</div>
+                        <div class="property-desc">Sets a future date for re-engagement after a disqualification or recycle event. Prevents premature re-nurturing of recycled leads.</div>
+                    </div>
+
+                    <div class="property-card">
+                        <div class="property-name">📈 score_current</div>
+                        <div class="property-type">Number</div>
+                        <div class="property-desc">Reflects the most recent engagement or behavior-based lead score. Used to determine track progression and qualification status.</div>
+                    </div>
+
+                    <div class="property-card">
+                        <div class="property-name">⚡ velocity_7d</div>
+                        <div class="property-type">Number</div>
+                        <div class="property-desc">Measures engagement acceleration over a rolling 7-day period for trigger logic. Identifies contacts with increasing engagement momentum.</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Instructions -->
-        <div id="instructions">
-            <h3>ℹ️ Instructions</h3>
-            <div class="instructions-content">
-                <ul>
-                    <li>Click branch nodes to expand/collapse</li>
-                    <li>Hover over nodes for detailed info</li>
-                    <li>Drag nodes to reposition</li>
-                    <li>Scroll to zoom in/out</li>
-                    <li>Drag background to pan</li>
-                    <li>Double-click center to reset</li>
-                    <li>Search to highlight matching nodes</li>
-                    <li>Export saves current view as PNG</li>
-                </ul>
+        <!-- Section 2: Automated Workflows -->
+        <div class="section workflows">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>
+                    <div class="section-icon" style="background: #A23B72;">2</div>
+                    Automated Workflows (4 Core Systems)
+                </h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <p style="color: #666; margin-bottom: 20px; font-size: 16px;">Four automation sequences that govern progression, pausing, and re-entry across the nurture lifecycle.</p>
+
+                <div class="workflow-container">
+                    <!-- Workflow A -->
+                    <div class="workflow-card workflow-a">
+                        <div class="workflow-title">🎯 Workflow A: Track Management</div>
+                        <div class="workflow-subtitle">Automatically advance or adjust nurture tracks based on engagement level and behavioral signals</div>
+
+                        <div class="workflow-details">
+                            <h4>TRIGGERS:</h4>
+                            <ul>
+                                <li>Property changes</li>
+                                <li>Form submissions</li>
+                                <li>Page views</li>
+                                <li>Content downloads</li>
+                                <li>New engagement events</li>
+                            </ul>
+
+                            <h4>ACTIONS:</h4>
+                            <ul>
+                                <li>Update track_current based on score bands</li>
+                                <li>Set or update highest_track_reached</li>
+                                <li>Ensure contact remains enrolled only if track_state = Active</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Workflow B -->
+                    <div class="workflow-card workflow-b">
+                        <div class="workflow-title">🔐 Workflow B: CRM Status Control</div>
+                        <div class="workflow-subtitle">Ensure nurture communications stop when sales ownership begins, auto-resume when returning to marketing-qualified</div>
+
+                        <div class="workflow-details">
+                            <h4>TRIGGERS:</h4>
+                            <ul>
+                                <li>Lifecycle stage updates in CRM</li>
+                                <li>Deal creation or closure</li>
+                            </ul>
+
+                            <h4>ACTIONS:</h4>
+                            <ul>
+                                <li>Pause nurture if contact becomes SQL, has open opportunity, or converts to customer (track_state → Paused)</li>
+                                <li>Set reentry_eligibility_date if disqualified or recycled</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Workflow C -->
+                    <div class="workflow-card workflow-c">
+                        <div class="workflow-title">🔄 Workflow C: Re-entry Logic</div>
+                        <div class="workflow-subtitle">Reactivate and re-enroll contacts in their most recent track at the saved checkpoint</div>
+
+                        <div class="workflow-details">
+                            <h4>TRIGGERS:</h4>
+                            <ul>
+                                <li>Lifecycle returning to marketing-qualified</li>
+                                <li>Recycle status after pause period</li>
+                            </ul>
+
+                            <h4>CONDITIONS:</h4>
+                            <ul>
+                                <li>reentry_eligibility_date reached</li>
+                                <li>crm_open_opportunity = false</li>
+                            </ul>
+
+                            <h4>ACTIONS:</h4>
+                            <ul>
+                                <li>Reactivate (track_state → Active)</li>
+                                <li>Re-enroll in most recent track at saved checkpoint</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Workflow D -->
+                    <div class="workflow-card workflow-d">
+                        <div class="workflow-title">✅ Workflow D: Checkpoint Tracking</div>
+                        <div class="workflow-subtitle">Maintain continuity so contacts resume exactly where they left off if paused or re-enrolled</div>
+
+                        <div class="workflow-details">
+                            <h4>TRIGGERS:</h4>
+                            <ul>
+                                <li>Successful delivery of nurture message</li>
+                                <li>Completion of content module</li>
+                            </ul>
+
+                            <h4>ACTIONS:</h4>
+                            <ul>
+                                <li>Increase track_checkpoint by 1</li>
+                                <li>If index exceeds available modules, mark track as Completed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="tooltip"></div>
+        <!-- Section 3: Checkpoint Resumption Logic -->
+        <div class="section checkpoint">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>
+                    <div class="section-icon" style="background: #F18F01;">3</div>
+                    Track Checkpoint Resumption Logic
+                </h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <p style="color: #666; margin-bottom: 20px; font-size: 16px;">System design ensuring contacts never restart from the beginning, preserving continuity through pauses, ownership changes, or lifecycle transitions.</p>
+
+                <div class="flow-items">
+                    <div class="flow-item">
+                        <div class="flow-item-title">📌 Module Reference System</div>
+                        <div class="flow-item-desc">Each nurture message references the track_checkpoint value to determine which module is next. The checkpoint acts as a pointer to the contact's exact position in the nurture sequence.</div>
+                    </div>
+
+                    <div class="flow-item">
+                        <div class="flow-item-title">➕ Increment After Each Send</div>
+                        <div class="flow-item-desc">After each successful send, the system automatically increments track_checkpoint by one. This ensures the next message delivery picks up at the correct next module.</div>
+                    </div>
+
+                    <div class="flow-item">
+                        <div class="flow-item-title">⏸️ Automatic Stop Conditions</div>
+                        <div class="flow-item-desc">Progression automatically stops if track_state = Paused or lifecycle indicates an open deal. This prevents nurture messages from being sent while sales is actively working the opportunity.</div>
+                    </div>
+
+                    <div class="flow-item">
+                        <div class="flow-item-title">🔄 Smart Resume Logic</div>
+                        <div class="flow-item-desc">When reactivated, the automation resumes from the saved checkpoint value without resetting progress. Contacts continue from their last position, maintaining journey continuity.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: CRM Synchronization -->
+        <div class="section crm">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>
+                    <div class="section-icon" style="background: #C73E1D;">4</div>
+                    CRM Synchronization & Automation Triggers
+                </h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <p style="color: #666; margin-bottom: 20px; font-size: 16px;">Bidirectional synchronization managing lifecycle stages, deal triggers, sales pauses, and recycle logic.</p>
+
+                <div class="list-items">
+                    <div class="list-item" style="border-left-color: #C73E1D;">
+                        <div class="list-item-title" style="color: #C73E1D;">🔄 Lifecycle Synchronization</div>
+                        <div class="list-item-desc">The CRM's lifecycle status updates the crm_lifecycle_stage field automatically through bidirectional sync. This ensures marketing automation always reflects the most current sales status.</div>
+                    </div>
+
+                    <div class="list-item" style="border-left-color: #C73E1D;">
+                        <div class="list-item-title" style="color: #C73E1D;">💼 Deal Triggers</div>
+                        <div class="list-item-desc">Deal creation or closure updates the crm_open_opportunity field to control whether nurture is paused or resumed. When a deal opens, nurture stops; when it closes, re-entry logic evaluates.</div>
+                    </div>
+
+                    <div class="list-item" style="border-left-color: #C73E1D;">
+                        <div class="list-item-title" style="color: #C73E1D;">⏸️ Sales Pause Automation</div>
+                        <div class="list-item-desc">When the lifecycle stage indicates sales ownership (SQL, Opportunity, or Customer), the system automatically sets track_state = Paused to prevent nurture interference.</div>
+                    </div>
+
+                    <div class="list-item" style="border-left-color: #C73E1D;">
+                        <div class="list-item-title" style="color: #C73E1D;">♻️ Recycle & Re-entry</div>
+                        <div class="list-item-desc">If the lifecycle stage changes to Recycle or Closed-Lost, the system waits until reentry_eligibility_date, then sets track_state = Active to resume the correct track at its saved checkpoint.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: Data Safeguards -->
+        <div class="section safeguards">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>
+                    <div class="section-icon" style="background: #592E83;">5</div>
+                    Data Reliability & Continuity Safeguards
+                </h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <p style="color: #666; margin-bottom: 20px; font-size: 16px;">Safeguards preventing data loss, duplication, looping, and premature restarts of nurture sequences.</p>
+
+                <div class="list-items">
+                    <div class="list-item" style="border-left-color: #592E83;">
+                        <div class="list-item-title" style="color: #592E83;">💾 Persistent Properties</div>
+                        <div class="list-item-desc">All key property values remain persistent even when a contact exits automation. Critical fields like track_checkpoint and highest_track_reached are never lost.</div>
+                    </div>
+
+                    <div class="list-item" style="border-left-color: #592E83;">
+                        <div class="list-item-title" style="color: #592E83;">🔒 No Automatic Clearing</div>
+                        <div class="list-item-desc">The system never clears track_checkpoint or highest_track_reached unless manually reset. This ensures contacts can always resume from their correct position.</div>
+                    </div>
+
+                    <div class="list-item" style="border-left-color: #592E83;">
+                        <div class="list-item-title" style="color: #592E83;">✅ Controlled Re-enrollment</div>
+                        <div class="list-item-desc">Re-enrollment criteria rely on track_state = Active, ensuring contacts rejoin at the correct position. The system validates state before any re-enrollment.</div>
+                    </div>
+
+                    <div class="list-item" style="border-left-color: #592E83;">
+                        <div class="list-item-title" style="color: #592E83;">🛡️ Prevents Common Issues</div>
+                        <div class="list-item-desc">This design prevents duplication, looping, or premature restarts of nurture sequences. Contacts receive the right message at the right time without repetition.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 6: Advanced Enhancements -->
+        <div class="section enhancements">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>
+                    <div class="section-icon" style="background: #4CAF50;">6</div>
+                    Advanced Enhancements (Future-Ready)
+                </h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <p style="color: #666; margin-bottom: 20px; font-size: 16px;">Future-ready features for velocity scoring, dynamic module management, and data quality assurance.</p>
+
+                <div class="list-items">
+                    <div class="list-item" style="border-left-color: #4CAF50;">
+                        <div class="list-item-title" style="color: #4CAF50;">📊 Velocity & Decay Scoring</div>
+                        <div class="list-item-desc">Add a rolling calculation that increases or decreases velocity_7d and score_current based on engagement frequency and recency. This identifies hot leads with accelerating interest and cold leads requiring different treatment.</div>
+                    </div>
+
+                    <div class="list-item" style="border-left-color: #4CAF50;">
+                        <div class="list-item-title" style="color: #4CAF50;">📚 Track Module Object Library</div>
+                        <div class="list-item-desc">Create a structured library of content modules with index numbers, allowing each track to scale beyond a fixed sequence and dynamically insert or skip modules. Enables personalized nurture paths based on behavior.</div>
+                    </div>
+
+                    <div class="list-item" style="border-left-color: #4CAF50;">
+                        <div class="list-item-title" style="color: #4CAF50;">🔍 Data Quality Audits</div>
+                        <div class="list-item-desc">Implement scheduled checks to confirm lifecycle synchronization accuracy and identify any paused contacts that should re-enter nurture. Ensures system integrity and catches edge cases.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 50px; padding: 30px; background: #f5f5f5; border-radius: 12px; text-align: center;">
+            <h3 style="color: #2E86AB; margin-bottom: 10px;">🎯 Complete Lifecycle Nurture Stream</h3>
+            <p style="color: #666; line-height: 1.8;">This system provides intelligent, automated lead nurturing with seamless CRM integration, checkpoint-based progression, and foolproof safeguards. Contacts move through awareness, research, qualification, and hot tracks based on engagement, with automatic pausing when sales takes over and smart re-entry when opportunities recycle.</p>
+        </div>
     </div>
 
     <script>
-        // Data Structure
-        const mindMapData = {
-            id: 'central',
-            name: 'Lead Nurturing Automation System',
-            description: 'Comprehensive automation system for lead nurturing with CRM integration',
-            type: 'central',
-            children: [
-                {
-                    id: 'branch1',
-                    name: 'Core Properties',
-                    description: '10 custom fields managing nurture logic, progression, and CRM alignment',
-                    type: 'branch',
-                    color: '#2E86AB',
-                    children: [
-                        { id: 'prop1', name: 'track_current', description: 'Dropdown (Awareness, Research, Qualification, Hot) - Controls active nurture stream', type: 'leaf' },
-                        { id: 'prop2', name: 'track_checkpoint', description: 'Number - Stores next module index for sequence continuation', type: 'leaf' },
-                        { id: 'prop3', name: 'highest_track_reached', description: 'Dropdown - Prevents regression/restarts by recording highest track entered', type: 'leaf' },
-                        { id: 'prop4', name: 'track_state', description: 'Dropdown (Active, Paused, Completed) - Controls sequence status', type: 'leaf' },
-                        { id: 'prop5', name: 'track_reason', description: 'Text - Documents why track is paused, resumed, or changed', type: 'leaf' },
-                        { id: 'prop6', name: 'crm_lifecycle_stage', description: 'Dropdown - Mirrors CRM lifecycle status of contact/account', type: 'leaf' },
-                        { id: 'prop7', name: 'crm_open_opportunity', description: 'Boolean (Yes/No) - Indicates active deal association', type: 'leaf' },
-                        { id: 'prop8', name: 'reentry_eligibility_date', description: 'Date - Sets future re-engagement date after disqualification/recycle', type: 'leaf' },
-                        { id: 'prop9', name: 'score_current', description: 'Number - Latest engagement/behavior-based lead score', type: 'leaf' },
-                        { id: 'prop10', name: 'velocity_7d', description: 'Number - 7-day engagement acceleration for trigger logic', type: 'leaf' }
-                    ]
-                },
-                {
-                    id: 'branch2',
-                    name: 'Automated Workflows',
-                    description: '4 automation sequences governing progression, pausing, and re-entry',
-                    type: 'branch',
-                    color: '#A23B72',
-                    children: [
-                        {
-                            id: 'workflow1',
-                            name: 'Workflow A: Track Management',
-                            description: 'Triggers: Property changes, form submissions, page views, downloads | Actions: Update track_current, set highest_track_reached, maintain Active enrollment',
-                            type: 'sub-branch',
-                            children: [
-                                { id: 'wf1-1', name: 'Triggers', description: 'Property changes, form submissions, page views, content downloads, engagement events', type: 'leaf' },
-                                { id: 'wf1-2', name: 'Actions', description: 'Update track_current based on score bands, set highest_track_reached, ensure Active enrollment', type: 'leaf' },
-                                { id: 'wf1-3', name: 'Purpose', description: 'Automatically advance/adjust nurture tracks based on engagement level and behavioral signals', type: 'leaf' }
-                            ]
-                        },
-                        {
-                            id: 'workflow2',
-                            name: 'Workflow B: CRM Status Control',
-                            description: 'Triggers: Lifecycle updates, deal creation/closure | Actions: Pause for SQL/Opportunity/Customer, set reentry date',
-                            type: 'sub-branch',
-                            children: [
-                                { id: 'wf2-1', name: 'Triggers', description: 'Lifecycle stage updates, deal creation/closure in connected CRM', type: 'leaf' },
-                                { id: 'wf2-2', name: 'Pause Actions', description: 'Pause nurture if contact becomes SQL, has open opportunity, or converts to customer (track_state → Paused)', type: 'leaf' },
-                                { id: 'wf2-3', name: 'Reentry Setup', description: 'Set reentry_eligibility_date if disqualified or recycled', type: 'leaf' },
-                                { id: 'wf2-4', name: 'Purpose', description: 'Stop nurture when sales ownership begins, auto-resume when returning to marketing-qualified/recycle', type: 'leaf' }
-                            ]
-                        },
-                        {
-                            id: 'workflow3',
-                            name: 'Workflow C: Re-entry Logic',
-                            description: 'Triggers: Return to marketing-qualified/recycle | Conditions: reentry_eligibility_date reached + no open opportunity',
-                            type: 'sub-branch',
-                            children: [
-                                { id: 'wf3-1', name: 'Triggers', description: 'Lifecycle returning to marketing-qualified or recycle status after pause period', type: 'leaf' },
-                                { id: 'wf3-2', name: 'Conditions', description: 'reentry_eligibility_date reached AND crm_open_opportunity = false', type: 'leaf' },
-                                { id: 'wf3-3', name: 'Actions', description: 'Reactivate (track_state → Active) and re-enroll in most recent track at saved checkpoint', type: 'leaf' }
-                            ]
-                        },
-                        {
-                            id: 'workflow4',
-                            name: 'Workflow D: Checkpoint Tracking',
-                            description: 'Triggers: Message delivery/module completion | Actions: Increment checkpoint, mark Completed when done',
-                            type: 'sub-branch',
-                            children: [
-                                { id: 'wf4-1', name: 'Triggers', description: 'Successful delivery of nurture message or completion of content module', type: 'leaf' },
-                                { id: 'wf4-2', name: 'Actions', description: 'Increase track_checkpoint by 1, mark Completed if index exceeds available modules', type: 'leaf' },
-                                { id: 'wf4-3', name: 'Purpose', description: 'Maintain continuity so contacts resume exactly where they left off if paused/re-enrolled', type: 'leaf' }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    id: 'branch3',
-                    name: 'Checkpoint Resumption Logic',
-                    description: 'System ensuring contacts never restart from beginning, preserving continuity',
-                    type: 'branch',
-                    color: '#F18F01',
-                    children: [
-                        { id: 'chk1', name: 'Module Reference', description: 'Each nurture message references track_checkpoint value to determine next module', type: 'leaf' },
-                        { id: 'chk2', name: 'Increment After Send', description: 'After each send: increment track_checkpoint by 1', type: 'leaf' },
-                        { id: 'chk3', name: 'Stop Conditions', description: 'Stop progression if track_state = Paused or lifecycle indicates open deal', type: 'leaf' },
-                        { id: 'chk4', name: 'Resume Logic', description: 'When reactivated, automation resumes from saved checkpoint without resetting progress', type: 'leaf' }
-                    ]
-                },
-                {
-                    id: 'branch4',
-                    name: 'CRM Synchronization',
-                    description: 'Bidirectional sync managing lifecycle, deals, pauses, and recycle logic',
-                    type: 'branch',
-                    color: '#C73E1D',
-                    children: [
-                        { id: 'crm1', name: 'Lifecycle Sync', description: 'Bidirectional sync: CRM lifecycle status updates crm_lifecycle_stage field automatically', type: 'leaf' },
-                        { id: 'crm2', name: 'Deal Triggers', description: 'Deal creation/closure updates crm_open_opportunity field to control pause/resume', type: 'leaf' },
-                        { id: 'crm3', name: 'Sales Pauses', description: 'When lifecycle = SQL/Opportunity/Customer, system sets track_state = Paused', type: 'leaf' },
-                        { id: 'crm4', name: 'Recycle Logic', description: 'Lifecycle = Recycle/Closed-Lost: wait until reentry_eligibility_date, then set track_state = Active at saved checkpoint', type: 'leaf' }
-                    ]
-                },
-                {
-                    id: 'branch5',
-                    name: 'Data Safeguards',
-                    description: 'Reliability and continuity safeguards preventing data loss and duplication',
-                    type: 'branch',
-                    color: '#592E83',
-                    children: [
-                        { id: 'safe1', name: 'Persistent Properties', description: 'All key property values remain persistent even when contact exits automation', type: 'leaf' },
-                        { id: 'safe2', name: 'No Auto-Clear', description: 'System never clears track_checkpoint or highest_track_reached unless manually reset', type: 'leaf' },
-                        { id: 'safe3', name: 'Re-enrollment Criteria', description: 'Re-enrollment relies on track_state = Active, ensuring contacts rejoin at correct position', type: 'leaf' },
-                        { id: 'safe4', name: 'Prevents Issues', description: 'Prevents duplication, looping, or premature restarts of nurture sequences', type: 'leaf' }
-                    ]
-                },
-                {
-                    id: 'branch6',
-                    name: 'Advanced Enhancements',
-                    description: 'Future-ready features for velocity scoring, module management, and quality audits',
-                    type: 'branch',
-                    color: '#4CAF50',
-                    children: [
-                        { id: 'adv1', name: 'Velocity & Decay Scoring', description: 'Rolling calculation: increase/decrease velocity_7d and score_current based on engagement frequency and recency', type: 'leaf' },
-                        { id: 'adv2', name: 'Track Module Object', description: 'Structured content library with index numbers: allows tracks to scale beyond fixed sequences, dynamically insert/skip modules', type: 'leaf' },
-                        { id: 'adv3', name: 'Data Quality Audits', description: 'Scheduled checks: confirm lifecycle synchronization accuracy, identify paused contacts that should re-enter nurture', type: 'leaf' }
-                    ]
-                }
-            ]
-        };
-
-        // Configuration
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        const centerX = width / 2;
-        const centerY = height / 2;
-
-        // Create SVG
-        const svg = d3.select('#mindmap')
-            .attr('width', width)
-            .attr('height', height);
-
-        // Create container group for zoom/pan
-        const g = svg.append('g');
-
-        // Tooltip
-        const tooltip = d3.select('.tooltip');
-
-        // Node size configuration
-        const nodeSizes = {
-            central: 60,
-            branch: 40,
-            'sub-branch': 30,
-            leaf: 25
-        };
-
-        // Flatten data structure
-        function flattenData(node, parent = null, depth = 0) {
-            const nodes = [];
-            const links = [];
-
-            const flatNode = {
-                id: node.id,
-                name: node.name,
-                description: node.description,
-                type: node.type,
-                color: node.color,
-                depth: depth,
-                parent: parent,
-                children: node.children || [],
-                _children: null,
-                collapsed: false
-            };
-
-            nodes.push(flatNode);
-
-            if (parent) {
-                links.push({
-                    source: parent.id,
-                    target: node.id
-                });
-            }
-
-            if (node.children) {
-                node.children.forEach(child => {
-                    const [childNodes, childLinks] = flattenData(child, flatNode, depth + 1);
-                    nodes.push(...childNodes);
-                    links.push(...childLinks);
-                });
-            }
-
-            return [nodes, links];
+        // Toggle section collapse
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('collapsed');
         }
 
-        const [nodesData, linksData] = flattenData(mindMapData);
-
-        // Load collapsed state from localStorage
-        const savedState = JSON.parse(localStorage.getItem('mindMapState') || '{}');
-        nodesData.forEach(node => {
-            if (savedState[node.id] !== undefined) {
-                node.collapsed = savedState[node.id];
-                if (node.collapsed && node.children.length > 0) {
-                    node._children = node.children;
-                    node.children = [];
-                }
-            }
-        });
-
-        // Get node color
-        function getNodeColor(node) {
-            if (node.type === 'central') return '#333333';
-            if (node.type === 'leaf' || node.type === 'sub-branch') {
-                const parent = nodesData.find(n => n.children.some(c => c.id === node.id));
-                if (parent && parent.type === 'sub-branch') {
-                    const grandParent = nodesData.find(n => n.children.some(c => c.id === parent.id));
-                    return grandParent ? grandParent.color : '#666';
-                }
-                return parent ? parent.color : '#666';
-            }
-            return node.color || '#666';
-        }
-
-        // Get node radius
-        function getNodeRadius(node) {
-            return nodeSizes[node.type] || 25;
-        }
-
-        // Force simulation
-        const simulation = d3.forceSimulation(nodesData)
-            .force('link', d3.forceLink(linksData).id(d => d.id).distance(d => {
-                const sourceNode = nodesData.find(n => n.id === d.source.id);
-                const targetNode = nodesData.find(n => n.id === d.target.id);
-                if (sourceNode.type === 'central') return 200;
-                if (sourceNode.type === 'branch') return 150;
-                if (sourceNode.type === 'sub-branch') return 100;
-                return 80;
-            }))
-            .force('charge', d3.forceManyBody().strength(d => {
-                if (d.type === 'central') return -3000;
-                if (d.type === 'branch') return -1000;
-                return -500;
-            }))
-            .force('center', d3.forceCenter(centerX, centerY))
-            .force('collision', d3.forceCollide().radius(d => getNodeRadius(d) + 20));
-
-        // Create links
-        const link = g.append('g')
-            .selectAll('path')
-            .data(linksData)
-            .join('path')
-            .attr('class', 'link')
-            .attr('stroke', d => {
-                const sourceNode = nodesData.find(n => n.id === d.source.id);
-                return getNodeColor(sourceNode);
-            })
-            .attr('stroke-opacity', 0.3);
-
-        // Create nodes
-        const node = g.append('g')
-            .selectAll('g')
-            .data(nodesData)
-            .join('g')
-            .attr('class', d => `node ${d.type}`)
-            .call(d3.drag()
-                .on('start', dragStarted)
-                .on('drag', dragged)
-                .on('end', dragEnded));
-
-        // Add circles to nodes
-        node.append('circle')
-            .attr('r', d => getNodeRadius(d))
-            .attr('fill', d => getNodeColor(d));
-
-        // Add text to nodes
-        node.append('text')
-            .text(d => {
-                if (d.type === 'central') return d.name;
-                if (d.name.length > 20) return d.name.substring(0, 18) + '...';
-                return d.name;
-            })
-            .attr('font-size', d => {
-                if (d.type === 'central') return '18px';
-                if (d.type === 'branch') return '14px';
-                return '12px';
-            })
-            .attr('dy', d => {
-                const radius = getNodeRadius(d);
-                const lines = Math.ceil(d.name.length / 20);
-                return lines > 1 ? -5 : 0;
-            })
-            .call(wrap, d => getNodeRadius(d) * 1.8);
-
-        // Text wrapping function
-        function wrap(text, width) {
-            text.each(function(d) {
-                const text = d3.select(this);
-                const words = d.name.split(/\s+/).reverse();
-                let word;
-                let line = [];
-                let lineNumber = 0;
-                const lineHeight = 1.1;
-                const y = text.attr('y') || 0;
-                const dy = 0;
-                let tspan = text.text(null).append('tspan').attr('x', 0).attr('y', y).attr('dy', dy + 'em');
-
-                while (word = words.pop()) {
-                    line.push(word);
-                    tspan.text(line.join(' '));
-                    if (tspan.node().getComputedTextLength() > width(d)) {
-                        line.pop();
-                        tspan.text(line.join(' '));
-                        line = [word];
-                        tspan = text.append('tspan')
-                            .attr('x', 0)
-                            .attr('y', y)
-                            .attr('dy', ++lineNumber * lineHeight + dy + 'em')
-                            .text(word);
-                    }
-                }
+        // Expand all sections
+        function expandAll() {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('collapsed');
             });
         }
 
-        // Node interactions
-        node.on('click', function(event, d) {
-            if (d.type === 'central') {
-                resetView();
-            } else if (d.type === 'branch' || d.type === 'sub-branch') {
-                toggleChildren(d);
-            }
-        })
-        .on('dblclick', function(event, d) {
-            if (d.type === 'central') {
-                resetView();
-            }
-        })
-        .on('mouseover', function(event, d) {
-            tooltip.html(`<strong>${d.name}</strong><br>${d.description || ''}`)
-                .style('left', (event.pageX + 15) + 'px')
-                .style('top', (event.pageY - 15) + 'px')
-                .classed('show', true);
-        })
-        .on('mouseout', function() {
-            tooltip.classed('show', false);
-        });
-
-        // Toggle children
-        function toggleChildren(d) {
-            if (d.children.length > 0) {
-                d._children = d.children;
-                d.children = [];
-                d.collapsed = true;
-            } else if (d._children) {
-                d.children = d._children;
-                d._children = null;
-                d.collapsed = false;
-            }
-
-            // Save state
-            const state = {};
-            nodesData.forEach(n => {
-                state[n.id] = n.collapsed;
+        // Collapse all sections
+        function collapseAll() {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('collapsed');
             });
-            localStorage.setItem('mindMapState', JSON.stringify(state));
-
-            update();
-        }
-
-        // Update visualization
-        function update() {
-            // Rebuild links based on current children
-            const activeLinks = [];
-            nodesData.forEach(node => {
-                node.children.forEach(child => {
-                    activeLinks.push({
-                        source: node.id,
-                        target: child.id
-                    });
-                });
-            });
-
-            // Update links
-            link.data(activeLinks, d => `${d.source.id}-${d.target.id}`)
-                .join(
-                    enter => enter.append('path')
-                        .attr('class', 'link')
-                        .attr('stroke', d => {
-                            const sourceNode = nodesData.find(n => n.id === (d.source.id || d.source));
-                            return getNodeColor(sourceNode);
-                        })
-                        .attr('stroke-opacity', 0),
-                    update => update,
-                    exit => exit.transition().duration(300).attr('stroke-opacity', 0).remove()
-                )
-                .transition()
-                .duration(300)
-                .attr('stroke-opacity', 0.3);
-
-            // Update collapsed indicator
-            node.select('circle')
-                .transition()
-                .duration(300)
-                .attr('stroke-dasharray', d => (d.collapsed && (d._children && d._children.length > 0)) ? '5,5' : 'none');
-
-            // Restart simulation
-            simulation.alpha(0.3).restart();
-        }
-
-        // Simulation tick
-        simulation.on('tick', () => {
-            link.attr('d', d => {
-                const sourceNode = typeof d.source === 'object' ? d.source : nodesData.find(n => n.id === d.source);
-                const targetNode = typeof d.target === 'object' ? d.target : nodesData.find(n => n.id === d.target);
-
-                if (!sourceNode || !targetNode) return '';
-
-                const dx = targetNode.x - sourceNode.x;
-                const dy = targetNode.y - sourceNode.y;
-                const dr = Math.sqrt(dx * dx + dy * dy);
-
-                return `M${sourceNode.x},${sourceNode.y}A${dr},${dr} 0 0,1 ${targetNode.x},${targetNode.y}`;
-            });
-
-            node.attr('transform', d => `translate(${d.x},${d.y})`);
-        });
-
-        // Drag functions
-        function dragStarted(event, d) {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-
-        function dragged(event, d) {
-            d.fx = event.x;
-            d.fy = event.y;
-        }
-
-        function dragEnded(event, d) {
-            if (!event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
-
-        // Zoom behavior
-        const zoom = d3.zoom()
-            .scaleExtent([0.3, 3])
-            .on('zoom', (event) => {
-                g.attr('transform', event.transform);
-            });
-
-        svg.call(zoom);
-
-        // Reset view
-        function resetView() {
-            svg.transition()
-                .duration(750)
-                .call(zoom.transform, d3.zoomIdentity.translate(0, 0).scale(1));
         }
 
         // Search functionality
+        const searchInput = document.getElementById('searchInput');
         let searchTimeout;
-        d3.select('#search').on('input', function() {
+
+        searchInput.addEventListener('input', function() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 const searchTerm = this.value.toLowerCase();
 
-                if (searchTerm === '') {
-                    node.classed('highlighted', false)
-                        .classed('search-highlight', false);
-                    link.classed('highlighted', false);
-                    return;
+                // Remove previous highlights
+                document.querySelectorAll('.highlight').forEach(el => {
+                    const parent = el.parentNode;
+                    parent.replaceChild(document.createTextNode(el.textContent), el);
+                    parent.normalize();
+                });
+
+                if (searchTerm === '') return;
+
+                // Expand all sections when searching
+                expandAll();
+
+                // Find and highlight matches
+                const walker = document.createTreeWalker(
+                    document.getElementById('container'),
+                    NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+
+                const nodesToHighlight = [];
+                while (walker.nextNode()) {
+                    const node = walker.currentNode;
+                    if (node.nodeValue.toLowerCase().includes(searchTerm)) {
+                        nodesToHighlight.push(node);
+                    }
                 }
 
-                node.classed('highlighted', d => {
-                    const matches = d.name.toLowerCase().includes(searchTerm) ||
-                                  (d.description && d.description.toLowerCase().includes(searchTerm));
-                    return matches;
-                })
-                .classed('search-highlight', d => {
-                    return d.name.toLowerCase().includes(searchTerm) ||
-                           (d.description && d.description.toLowerCase().includes(searchTerm));
+                nodesToHighlight.forEach(node => {
+                    const parent = node.parentNode;
+                    if (parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE') return;
+
+                    const text = node.nodeValue;
+                    const regex = new RegExp(`(${searchTerm})`, 'gi');
+                    const parts = text.split(regex);
+
+                    const fragment = document.createDocumentFragment();
+                    parts.forEach(part => {
+                        if (part.toLowerCase() === searchTerm.toLowerCase()) {
+                            const span = document.createElement('span');
+                            span.className = 'highlight';
+                            span.textContent = part;
+                            fragment.appendChild(span);
+                        } else {
+                            fragment.appendChild(document.createTextNode(part));
+                        }
+                    });
+
+                    parent.replaceChild(fragment, node);
                 });
 
-                // Highlight connecting links
-                link.classed('highlighted', l => {
-                    const sourceNode = nodesData.find(n => n.id === l.source.id);
-                    const targetNode = nodesData.find(n => n.id === l.target.id);
-                    return (sourceNode.name.toLowerCase().includes(searchTerm) ||
-                           targetNode.name.toLowerCase().includes(searchTerm));
-                });
+                // Scroll to first match
+                const firstHighlight = document.querySelector('.highlight');
+                if (firstHighlight) {
+                    firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }, 300);
         });
 
-        // Reset view button
-        d3.select('#resetView').on('click', resetView);
-
-        // Expand all
-        d3.select('#expandAll').on('click', () => {
-            nodesData.forEach(node => {
-                if (node._children) {
-                    node.children = node._children;
-                    node._children = null;
-                    node.collapsed = false;
-                }
+        // Smooth scroll for better UX
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', function() {
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
             });
-            localStorage.setItem('mindMapState', JSON.stringify({}));
-            update();
         });
-
-        // Collapse all
-        d3.select('#collapseAll').on('click', () => {
-            nodesData.forEach(node => {
-                if (node.type !== 'central' && node.children.length > 0) {
-                    node._children = node.children;
-                    node.children = [];
-                    node.collapsed = true;
-                }
-            });
-            const state = {};
-            nodesData.forEach(n => {
-                state[n.id] = n.collapsed;
-            });
-            localStorage.setItem('mindMapState', JSON.stringify(state));
-            update();
-        });
-
-        // Export as PNG
-        d3.select('#exportPNG').on('click', () => {
-            const svgElement = document.getElementById('mindmap');
-            const svgData = new XMLSerializer().serializeToString(svgElement);
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-
-            canvas.width = width;
-            canvas.height = height;
-
-            img.onload = function() {
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0);
-
-                const pngFile = canvas.toDataURL('image/png');
-                const downloadLink = document.createElement('a');
-                downloadLink.download = 'lead_nurturing_mindmap.png';
-                downloadLink.href = pngFile;
-                downloadLink.click();
-            };
-
-            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
-        });
-
-        // Toggle legend
-        d3.select('#legend h3').on('click', function() {
-            const legend = d3.select('#legend');
-            legend.classed('collapsed', !legend.classed('collapsed'));
-        });
-
-        // Toggle instructions
-        d3.select('#instructions h3').on('click', function() {
-            const instructions = d3.select('#instructions');
-            instructions.classed('collapsed', !instructions.classed('collapsed'));
-        });
-
-        // Window resize handler
-        window.addEventListener('resize', () => {
-            const newWidth = window.innerWidth;
-            const newHeight = window.innerHeight;
-
-            svg.attr('width', newWidth).attr('height', newHeight);
-
-            simulation
-                .force('center', d3.forceCenter(newWidth / 2, newHeight / 2))
-                .alpha(0.3)
-                .restart();
-        });
-
-        // Initial simulation warm-up
-        simulation.alpha(1).restart();
     </script>
 </body>
 </html>
