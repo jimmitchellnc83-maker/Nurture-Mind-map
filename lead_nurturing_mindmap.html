@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Nurturing Automation System - Interactive Mind Map</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #mindmap {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            cursor: grab;
+        }
+
+        #mindmap:active {
+            cursor: grabbing;
+        }
+
+        /* Control Panel */
+        #controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        #controls h3 {
+            margin-bottom: 10px;
+            color: #2E86AB;
+            font-size: 16px;
+        }
+
+        .control-group {
+            margin-bottom: 12px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #2E86AB;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            border: none;
+            border-radius: 5px;
+            background: #2E86AB;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #1a5f7a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #4CAF50;
+        }
+
+        .btn-secondary:hover {
+            background: #388E3C;
+        }
+
+        .btn-tertiary {
+            background: #F18F01;
+        }
+
+        .btn-tertiary:hover {
+            background: #d67a00;
+        }
+
+        /* Legend */
+        #legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 280px;
+        }
+
+        #legend h3 {
+            margin-bottom: 10px;
+            color: #2E86AB;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #legend h3::after {
+            content: '▼';
+            font-size: 12px;
+        }
+
+        #legend.collapsed h3::after {
+            content: '▶';
+        }
+
+        .legend-content {
+            max-height: 500px;
+            overflow: auto;
+            transition: max-height 0.3s ease;
+        }
+
+        #legend.collapsed .legend-content {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid #333;
+        }
+
+        /* Instructions */
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        #instructions h3 {
+            margin-bottom: 10px;
+            color: #2E86AB;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #instructions h3::after {
+            content: '▼';
+            font-size: 12px;
+        }
+
+        #instructions.collapsed h3::after {
+            content: '▶';
+        }
+
+        .instructions-content {
+            max-height: 300px;
+            overflow: auto;
+            transition: max-height 0.3s ease;
+        }
+
+        #instructions.collapsed .instructions-content {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        #instructions ul {
+            list-style: none;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        #instructions li {
+            margin-bottom: 6px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        #instructions li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #2E86AB;
+        }
+
+        /* Tooltips */
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            max-width: 300px;
+            z-index: 2000;
+            line-height: 1.5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
+        /* Node and Link Styles */
+        .link {
+            fill: none;
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 2px;
+            transition: all 0.3s;
+        }
+
+        .link.highlighted {
+            stroke: #F18F01;
+            stroke-opacity: 1;
+            stroke-width: 3px;
+        }
+
+        .node circle {
+            stroke: #fff;
+            stroke-width: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .node.highlighted circle {
+            stroke: #F18F01;
+            stroke-width: 4px;
+            filter: drop-shadow(0 0 10px #F18F01);
+        }
+
+        .node text {
+            font-size: 12px;
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            fill: #fff;
+            font-weight: 600;
+        }
+
+        .node.central text {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .node.branch text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .node:hover circle {
+            filter: brightness(1.2) drop-shadow(0 0 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .node.collapsed circle {
+            stroke-dasharray: 5, 5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #controls, #legend, #instructions {
+                max-width: 250px;
+                font-size: 11px;
+            }
+
+            button {
+                padding: 8px;
+                font-size: 12px;
+            }
+        }
+
+        /* Search Highlight */
+        .search-highlight {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Loading Indicator */
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #2E86AB;
+            z-index: 3000;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <svg id="mindmap"></svg>
+
+        <!-- Control Panel -->
+        <div id="controls">
+            <h3>🎮 Controls</h3>
+            <div class="control-group">
+                <label for="search">Search Nodes:</label>
+                <input type="text" id="search" placeholder="Type to search...">
+            </div>
+            <button id="resetView" class="btn-secondary">🔄 Reset View</button>
+            <button id="exportPNG" class="btn-tertiary">📷 Export as PNG</button>
+            <button id="expandAll">➕ Expand All</button>
+            <button id="collapseAll">➖ Collapse All</button>
+        </div>
+
+        <!-- Legend -->
+        <div id="legend">
+            <h3>📊 Legend</h3>
+            <div class="legend-content">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2E86AB;"></div>
+                    <span>Core Properties</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #A23B72;"></div>
+                    <span>Automated Workflows</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #F18F01;"></div>
+                    <span>Checkpoint Logic</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #C73E1D;"></div>
+                    <span>CRM Synchronization</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #592E83;"></div>
+                    <span>Data Safeguards</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4CAF50;"></div>
+                    <span>Advanced Enhancements</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #333333;"></div>
+                    <span>Central Node</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div id="instructions">
+            <h3>ℹ️ Instructions</h3>
+            <div class="instructions-content">
+                <ul>
+                    <li>Click branch nodes to expand/collapse</li>
+                    <li>Hover over nodes for detailed info</li>
+                    <li>Drag nodes to reposition</li>
+                    <li>Scroll to zoom in/out</li>
+                    <li>Drag background to pan</li>
+                    <li>Double-click center to reset</li>
+                    <li>Search to highlight matching nodes</li>
+                    <li>Export saves current view as PNG</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tooltip"></div>
+    </div>
+
+    <script>
+        // Data Structure
+        const mindMapData = {
+            id: 'central',
+            name: 'Lead Nurturing Automation System',
+            description: 'Comprehensive automation system for lead nurturing with CRM integration',
+            type: 'central',
+            children: [
+                {
+                    id: 'branch1',
+                    name: 'Core Properties',
+                    description: '10 custom fields managing nurture logic, progression, and CRM alignment',
+                    type: 'branch',
+                    color: '#2E86AB',
+                    children: [
+                        { id: 'prop1', name: 'track_current', description: 'Dropdown (Awareness, Research, Qualification, Hot) - Controls active nurture stream', type: 'leaf' },
+                        { id: 'prop2', name: 'track_checkpoint', description: 'Number - Stores next module index for sequence continuation', type: 'leaf' },
+                        { id: 'prop3', name: 'highest_track_reached', description: 'Dropdown - Prevents regression/restarts by recording highest track entered', type: 'leaf' },
+                        { id: 'prop4', name: 'track_state', description: 'Dropdown (Active, Paused, Completed) - Controls sequence status', type: 'leaf' },
+                        { id: 'prop5', name: 'track_reason', description: 'Text - Documents why track is paused, resumed, or changed', type: 'leaf' },
+                        { id: 'prop6', name: 'crm_lifecycle_stage', description: 'Dropdown - Mirrors CRM lifecycle status of contact/account', type: 'leaf' },
+                        { id: 'prop7', name: 'crm_open_opportunity', description: 'Boolean (Yes/No) - Indicates active deal association', type: 'leaf' },
+                        { id: 'prop8', name: 'reentry_eligibility_date', description: 'Date - Sets future re-engagement date after disqualification/recycle', type: 'leaf' },
+                        { id: 'prop9', name: 'score_current', description: 'Number - Latest engagement/behavior-based lead score', type: 'leaf' },
+                        { id: 'prop10', name: 'velocity_7d', description: 'Number - 7-day engagement acceleration for trigger logic', type: 'leaf' }
+                    ]
+                },
+                {
+                    id: 'branch2',
+                    name: 'Automated Workflows',
+                    description: '4 automation sequences governing progression, pausing, and re-entry',
+                    type: 'branch',
+                    color: '#A23B72',
+                    children: [
+                        {
+                            id: 'workflow1',
+                            name: 'Workflow A: Track Management',
+                            description: 'Triggers: Property changes, form submissions, page views, downloads | Actions: Update track_current, set highest_track_reached, maintain Active enrollment',
+                            type: 'sub-branch',
+                            children: [
+                                { id: 'wf1-1', name: 'Triggers', description: 'Property changes, form submissions, page views, content downloads, engagement events', type: 'leaf' },
+                                { id: 'wf1-2', name: 'Actions', description: 'Update track_current based on score bands, set highest_track_reached, ensure Active enrollment', type: 'leaf' },
+                                { id: 'wf1-3', name: 'Purpose', description: 'Automatically advance/adjust nurture tracks based on engagement level and behavioral signals', type: 'leaf' }
+                            ]
+                        },
+                        {
+                            id: 'workflow2',
+                            name: 'Workflow B: CRM Status Control',
+                            description: 'Triggers: Lifecycle updates, deal creation/closure | Actions: Pause for SQL/Opportunity/Customer, set reentry date',
+                            type: 'sub-branch',
+                            children: [
+                                { id: 'wf2-1', name: 'Triggers', description: 'Lifecycle stage updates, deal creation/closure in connected CRM', type: 'leaf' },
+                                { id: 'wf2-2', name: 'Pause Actions', description: 'Pause nurture if contact becomes SQL, has open opportunity, or converts to customer (track_state → Paused)', type: 'leaf' },
+                                { id: 'wf2-3', name: 'Reentry Setup', description: 'Set reentry_eligibility_date if disqualified or recycled', type: 'leaf' },
+                                { id: 'wf2-4', name: 'Purpose', description: 'Stop nurture when sales ownership begins, auto-resume when returning to marketing-qualified/recycle', type: 'leaf' }
+                            ]
+                        },
+                        {
+                            id: 'workflow3',
+                            name: 'Workflow C: Re-entry Logic',
+                            description: 'Triggers: Return to marketing-qualified/recycle | Conditions: reentry_eligibility_date reached + no open opportunity',
+                            type: 'sub-branch',
+                            children: [
+                                { id: 'wf3-1', name: 'Triggers', description: 'Lifecycle returning to marketing-qualified or recycle status after pause period', type: 'leaf' },
+                                { id: 'wf3-2', name: 'Conditions', description: 'reentry_eligibility_date reached AND crm_open_opportunity = false', type: 'leaf' },
+                                { id: 'wf3-3', name: 'Actions', description: 'Reactivate (track_state → Active) and re-enroll in most recent track at saved checkpoint', type: 'leaf' }
+                            ]
+                        },
+                        {
+                            id: 'workflow4',
+                            name: 'Workflow D: Checkpoint Tracking',
+                            description: 'Triggers: Message delivery/module completion | Actions: Increment checkpoint, mark Completed when done',
+                            type: 'sub-branch',
+                            children: [
+                                { id: 'wf4-1', name: 'Triggers', description: 'Successful delivery of nurture message or completion of content module', type: 'leaf' },
+                                { id: 'wf4-2', name: 'Actions', description: 'Increase track_checkpoint by 1, mark Completed if index exceeds available modules', type: 'leaf' },
+                                { id: 'wf4-3', name: 'Purpose', description: 'Maintain continuity so contacts resume exactly where they left off if paused/re-enrolled', type: 'leaf' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 'branch3',
+                    name: 'Checkpoint Resumption Logic',
+                    description: 'System ensuring contacts never restart from beginning, preserving continuity',
+                    type: 'branch',
+                    color: '#F18F01',
+                    children: [
+                        { id: 'chk1', name: 'Module Reference', description: 'Each nurture message references track_checkpoint value to determine next module', type: 'leaf' },
+                        { id: 'chk2', name: 'Increment After Send', description: 'After each send: increment track_checkpoint by 1', type: 'leaf' },
+                        { id: 'chk3', name: 'Stop Conditions', description: 'Stop progression if track_state = Paused or lifecycle indicates open deal', type: 'leaf' },
+                        { id: 'chk4', name: 'Resume Logic', description: 'When reactivated, automation resumes from saved checkpoint without resetting progress', type: 'leaf' }
+                    ]
+                },
+                {
+                    id: 'branch4',
+                    name: 'CRM Synchronization',
+                    description: 'Bidirectional sync managing lifecycle, deals, pauses, and recycle logic',
+                    type: 'branch',
+                    color: '#C73E1D',
+                    children: [
+                        { id: 'crm1', name: 'Lifecycle Sync', description: 'Bidirectional sync: CRM lifecycle status updates crm_lifecycle_stage field automatically', type: 'leaf' },
+                        { id: 'crm2', name: 'Deal Triggers', description: 'Deal creation/closure updates crm_open_opportunity field to control pause/resume', type: 'leaf' },
+                        { id: 'crm3', name: 'Sales Pauses', description: 'When lifecycle = SQL/Opportunity/Customer, system sets track_state = Paused', type: 'leaf' },
+                        { id: 'crm4', name: 'Recycle Logic', description: 'Lifecycle = Recycle/Closed-Lost: wait until reentry_eligibility_date, then set track_state = Active at saved checkpoint', type: 'leaf' }
+                    ]
+                },
+                {
+                    id: 'branch5',
+                    name: 'Data Safeguards',
+                    description: 'Reliability and continuity safeguards preventing data loss and duplication',
+                    type: 'branch',
+                    color: '#592E83',
+                    children: [
+                        { id: 'safe1', name: 'Persistent Properties', description: 'All key property values remain persistent even when contact exits automation', type: 'leaf' },
+                        { id: 'safe2', name: 'No Auto-Clear', description: 'System never clears track_checkpoint or highest_track_reached unless manually reset', type: 'leaf' },
+                        { id: 'safe3', name: 'Re-enrollment Criteria', description: 'Re-enrollment relies on track_state = Active, ensuring contacts rejoin at correct position', type: 'leaf' },
+                        { id: 'safe4', name: 'Prevents Issues', description: 'Prevents duplication, looping, or premature restarts of nurture sequences', type: 'leaf' }
+                    ]
+                },
+                {
+                    id: 'branch6',
+                    name: 'Advanced Enhancements',
+                    description: 'Future-ready features for velocity scoring, module management, and quality audits',
+                    type: 'branch',
+                    color: '#4CAF50',
+                    children: [
+                        { id: 'adv1', name: 'Velocity & Decay Scoring', description: 'Rolling calculation: increase/decrease velocity_7d and score_current based on engagement frequency and recency', type: 'leaf' },
+                        { id: 'adv2', name: 'Track Module Object', description: 'Structured content library with index numbers: allows tracks to scale beyond fixed sequences, dynamically insert/skip modules', type: 'leaf' },
+                        { id: 'adv3', name: 'Data Quality Audits', description: 'Scheduled checks: confirm lifecycle synchronization accuracy, identify paused contacts that should re-enter nurture', type: 'leaf' }
+                    ]
+                }
+            ]
+        };
+
+        // Configuration
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        // Create SVG
+        const svg = d3.select('#mindmap')
+            .attr('width', width)
+            .attr('height', height);
+
+        // Create container group for zoom/pan
+        const g = svg.append('g');
+
+        // Tooltip
+        const tooltip = d3.select('.tooltip');
+
+        // Node size configuration
+        const nodeSizes = {
+            central: 60,
+            branch: 40,
+            'sub-branch': 30,
+            leaf: 25
+        };
+
+        // Flatten data structure
+        function flattenData(node, parent = null, depth = 0) {
+            const nodes = [];
+            const links = [];
+
+            const flatNode = {
+                id: node.id,
+                name: node.name,
+                description: node.description,
+                type: node.type,
+                color: node.color,
+                depth: depth,
+                parent: parent,
+                children: node.children || [],
+                _children: null,
+                collapsed: false
+            };
+
+            nodes.push(flatNode);
+
+            if (parent) {
+                links.push({
+                    source: parent.id,
+                    target: node.id
+                });
+            }
+
+            if (node.children) {
+                node.children.forEach(child => {
+                    const [childNodes, childLinks] = flattenData(child, flatNode, depth + 1);
+                    nodes.push(...childNodes);
+                    links.push(...childLinks);
+                });
+            }
+
+            return [nodes, links];
+        }
+
+        const [nodesData, linksData] = flattenData(mindMapData);
+
+        // Load collapsed state from localStorage
+        const savedState = JSON.parse(localStorage.getItem('mindMapState') || '{}');
+        nodesData.forEach(node => {
+            if (savedState[node.id] !== undefined) {
+                node.collapsed = savedState[node.id];
+                if (node.collapsed && node.children.length > 0) {
+                    node._children = node.children;
+                    node.children = [];
+                }
+            }
+        });
+
+        // Get node color
+        function getNodeColor(node) {
+            if (node.type === 'central') return '#333333';
+            if (node.type === 'leaf' || node.type === 'sub-branch') {
+                const parent = nodesData.find(n => n.children.some(c => c.id === node.id));
+                if (parent && parent.type === 'sub-branch') {
+                    const grandParent = nodesData.find(n => n.children.some(c => c.id === parent.id));
+                    return grandParent ? grandParent.color : '#666';
+                }
+                return parent ? parent.color : '#666';
+            }
+            return node.color || '#666';
+        }
+
+        // Get node radius
+        function getNodeRadius(node) {
+            return nodeSizes[node.type] || 25;
+        }
+
+        // Force simulation
+        const simulation = d3.forceSimulation(nodesData)
+            .force('link', d3.forceLink(linksData).id(d => d.id).distance(d => {
+                const sourceNode = nodesData.find(n => n.id === d.source.id);
+                const targetNode = nodesData.find(n => n.id === d.target.id);
+                if (sourceNode.type === 'central') return 200;
+                if (sourceNode.type === 'branch') return 150;
+                if (sourceNode.type === 'sub-branch') return 100;
+                return 80;
+            }))
+            .force('charge', d3.forceManyBody().strength(d => {
+                if (d.type === 'central') return -3000;
+                if (d.type === 'branch') return -1000;
+                return -500;
+            }))
+            .force('center', d3.forceCenter(centerX, centerY))
+            .force('collision', d3.forceCollide().radius(d => getNodeRadius(d) + 20));
+
+        // Create links
+        const link = g.append('g')
+            .selectAll('path')
+            .data(linksData)
+            .join('path')
+            .attr('class', 'link')
+            .attr('stroke', d => {
+                const sourceNode = nodesData.find(n => n.id === d.source.id);
+                return getNodeColor(sourceNode);
+            })
+            .attr('stroke-opacity', 0.3);
+
+        // Create nodes
+        const node = g.append('g')
+            .selectAll('g')
+            .data(nodesData)
+            .join('g')
+            .attr('class', d => `node ${d.type}`)
+            .call(d3.drag()
+                .on('start', dragStarted)
+                .on('drag', dragged)
+                .on('end', dragEnded));
+
+        // Add circles to nodes
+        node.append('circle')
+            .attr('r', d => getNodeRadius(d))
+            .attr('fill', d => getNodeColor(d));
+
+        // Add text to nodes
+        node.append('text')
+            .text(d => {
+                if (d.type === 'central') return d.name;
+                if (d.name.length > 20) return d.name.substring(0, 18) + '...';
+                return d.name;
+            })
+            .attr('font-size', d => {
+                if (d.type === 'central') return '18px';
+                if (d.type === 'branch') return '14px';
+                return '12px';
+            })
+            .attr('dy', d => {
+                const radius = getNodeRadius(d);
+                const lines = Math.ceil(d.name.length / 20);
+                return lines > 1 ? -5 : 0;
+            })
+            .call(wrap, d => getNodeRadius(d) * 1.8);
+
+        // Text wrapping function
+        function wrap(text, width) {
+            text.each(function(d) {
+                const text = d3.select(this);
+                const words = d.name.split(/\s+/).reverse();
+                let word;
+                let line = [];
+                let lineNumber = 0;
+                const lineHeight = 1.1;
+                const y = text.attr('y') || 0;
+                const dy = 0;
+                let tspan = text.text(null).append('tspan').attr('x', 0).attr('y', y).attr('dy', dy + 'em');
+
+                while (word = words.pop()) {
+                    line.push(word);
+                    tspan.text(line.join(' '));
+                    if (tspan.node().getComputedTextLength() > width(d)) {
+                        line.pop();
+                        tspan.text(line.join(' '));
+                        line = [word];
+                        tspan = text.append('tspan')
+                            .attr('x', 0)
+                            .attr('y', y)
+                            .attr('dy', ++lineNumber * lineHeight + dy + 'em')
+                            .text(word);
+                    }
+                }
+            });
+        }
+
+        // Node interactions
+        node.on('click', function(event, d) {
+            if (d.type === 'central') {
+                resetView();
+            } else if (d.type === 'branch' || d.type === 'sub-branch') {
+                toggleChildren(d);
+            }
+        })
+        .on('dblclick', function(event, d) {
+            if (d.type === 'central') {
+                resetView();
+            }
+        })
+        .on('mouseover', function(event, d) {
+            tooltip.html(`<strong>${d.name}</strong><br>${d.description || ''}`)
+                .style('left', (event.pageX + 15) + 'px')
+                .style('top', (event.pageY - 15) + 'px')
+                .classed('show', true);
+        })
+        .on('mouseout', function() {
+            tooltip.classed('show', false);
+        });
+
+        // Toggle children
+        function toggleChildren(d) {
+            if (d.children.length > 0) {
+                d._children = d.children;
+                d.children = [];
+                d.collapsed = true;
+            } else if (d._children) {
+                d.children = d._children;
+                d._children = null;
+                d.collapsed = false;
+            }
+
+            // Save state
+            const state = {};
+            nodesData.forEach(n => {
+                state[n.id] = n.collapsed;
+            });
+            localStorage.setItem('mindMapState', JSON.stringify(state));
+
+            update();
+        }
+
+        // Update visualization
+        function update() {
+            // Rebuild links based on current children
+            const activeLinks = [];
+            nodesData.forEach(node => {
+                node.children.forEach(child => {
+                    activeLinks.push({
+                        source: node.id,
+                        target: child.id
+                    });
+                });
+            });
+
+            // Update links
+            link.data(activeLinks, d => `${d.source.id}-${d.target.id}`)
+                .join(
+                    enter => enter.append('path')
+                        .attr('class', 'link')
+                        .attr('stroke', d => {
+                            const sourceNode = nodesData.find(n => n.id === (d.source.id || d.source));
+                            return getNodeColor(sourceNode);
+                        })
+                        .attr('stroke-opacity', 0),
+                    update => update,
+                    exit => exit.transition().duration(300).attr('stroke-opacity', 0).remove()
+                )
+                .transition()
+                .duration(300)
+                .attr('stroke-opacity', 0.3);
+
+            // Update collapsed indicator
+            node.select('circle')
+                .transition()
+                .duration(300)
+                .attr('stroke-dasharray', d => (d.collapsed && (d._children && d._children.length > 0)) ? '5,5' : 'none');
+
+            // Restart simulation
+            simulation.alpha(0.3).restart();
+        }
+
+        // Simulation tick
+        simulation.on('tick', () => {
+            link.attr('d', d => {
+                const sourceNode = typeof d.source === 'object' ? d.source : nodesData.find(n => n.id === d.source);
+                const targetNode = typeof d.target === 'object' ? d.target : nodesData.find(n => n.id === d.target);
+
+                if (!sourceNode || !targetNode) return '';
+
+                const dx = targetNode.x - sourceNode.x;
+                const dy = targetNode.y - sourceNode.y;
+                const dr = Math.sqrt(dx * dx + dy * dy);
+
+                return `M${sourceNode.x},${sourceNode.y}A${dr},${dr} 0 0,1 ${targetNode.x},${targetNode.y}`;
+            });
+
+            node.attr('transform', d => `translate(${d.x},${d.y})`);
+        });
+
+        // Drag functions
+        function dragStarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragEnded(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        // Zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.3, 3])
+            .on('zoom', (event) => {
+                g.attr('transform', event.transform);
+            });
+
+        svg.call(zoom);
+
+        // Reset view
+        function resetView() {
+            svg.transition()
+                .duration(750)
+                .call(zoom.transform, d3.zoomIdentity.translate(0, 0).scale(1));
+        }
+
+        // Search functionality
+        let searchTimeout;
+        d3.select('#search').on('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchTerm = this.value.toLowerCase();
+
+                if (searchTerm === '') {
+                    node.classed('highlighted', false)
+                        .classed('search-highlight', false);
+                    link.classed('highlighted', false);
+                    return;
+                }
+
+                node.classed('highlighted', d => {
+                    const matches = d.name.toLowerCase().includes(searchTerm) ||
+                                  (d.description && d.description.toLowerCase().includes(searchTerm));
+                    return matches;
+                })
+                .classed('search-highlight', d => {
+                    return d.name.toLowerCase().includes(searchTerm) ||
+                           (d.description && d.description.toLowerCase().includes(searchTerm));
+                });
+
+                // Highlight connecting links
+                link.classed('highlighted', l => {
+                    const sourceNode = nodesData.find(n => n.id === l.source.id);
+                    const targetNode = nodesData.find(n => n.id === l.target.id);
+                    return (sourceNode.name.toLowerCase().includes(searchTerm) ||
+                           targetNode.name.toLowerCase().includes(searchTerm));
+                });
+            }, 300);
+        });
+
+        // Reset view button
+        d3.select('#resetView').on('click', resetView);
+
+        // Expand all
+        d3.select('#expandAll').on('click', () => {
+            nodesData.forEach(node => {
+                if (node._children) {
+                    node.children = node._children;
+                    node._children = null;
+                    node.collapsed = false;
+                }
+            });
+            localStorage.setItem('mindMapState', JSON.stringify({}));
+            update();
+        });
+
+        // Collapse all
+        d3.select('#collapseAll').on('click', () => {
+            nodesData.forEach(node => {
+                if (node.type !== 'central' && node.children.length > 0) {
+                    node._children = node.children;
+                    node.children = [];
+                    node.collapsed = true;
+                }
+            });
+            const state = {};
+            nodesData.forEach(n => {
+                state[n.id] = n.collapsed;
+            });
+            localStorage.setItem('mindMapState', JSON.stringify(state));
+            update();
+        });
+
+        // Export as PNG
+        d3.select('#exportPNG').on('click', () => {
+            const svgElement = document.getElementById('mindmap');
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            canvas.width = width;
+            canvas.height = height;
+
+            img.onload = function() {
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+
+                const pngFile = canvas.toDataURL('image/png');
+                const downloadLink = document.createElement('a');
+                downloadLink.download = 'lead_nurturing_mindmap.png';
+                downloadLink.href = pngFile;
+                downloadLink.click();
+            };
+
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        });
+
+        // Toggle legend
+        d3.select('#legend h3').on('click', function() {
+            const legend = d3.select('#legend');
+            legend.classed('collapsed', !legend.classed('collapsed'));
+        });
+
+        // Toggle instructions
+        d3.select('#instructions h3').on('click', function() {
+            const instructions = d3.select('#instructions');
+            instructions.classed('collapsed', !instructions.classed('collapsed'));
+        });
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            const newWidth = window.innerWidth;
+            const newHeight = window.innerHeight;
+
+            svg.attr('width', newWidth).attr('height', newHeight);
+
+            simulation
+                .force('center', d3.forceCenter(newWidth / 2, newHeight / 2))
+                .alpha(0.3)
+                .restart();
+        });
+
+        // Initial simulation warm-up
+        simulation.alpha(1).restart();
+    </script>
+</body>
+</html>
