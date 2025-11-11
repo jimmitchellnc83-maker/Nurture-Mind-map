@@ -18,7 +18,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1800px;
             margin: 0 auto;
             background: white;
             padding: 40px;
@@ -42,7 +42,10 @@
 
         .flowchart-container {
             overflow-x: auto;
+            overflow-y: auto;
             padding: 20px 0;
+            background: #fafafa;
+            border-radius: 10px;
         }
 
         svg {
@@ -59,7 +62,7 @@
 
         .process-text {
             fill: white;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             text-anchor: middle;
         }
@@ -73,7 +76,7 @@
 
         .decision-text {
             fill: white;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             text-anchor: middle;
         }
@@ -87,7 +90,7 @@
 
         .track-text {
             fill: white;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
             text-anchor: middle;
         }
@@ -101,7 +104,7 @@
 
         .crm-text {
             fill: white;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             text-anchor: middle;
         }
@@ -130,20 +133,20 @@
 
         .arrow-yes {
             stroke: #4CAF50;
-            stroke-width: 3;
+            stroke-width: 4;
             fill: none;
             marker-end: url(#arrowhead-yes);
         }
 
         .arrow-no {
             stroke: #C73E1D;
-            stroke-width: 3;
+            stroke-width: 4;
             fill: none;
             marker-end: url(#arrowhead-no);
         }
 
         .arrow-label {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             fill: #333;
         }
@@ -157,9 +160,16 @@
 
         .start-end-text {
             fill: white;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             text-anchor: middle;
+        }
+
+        /* Section labels */
+        .section-label {
+            font-size: 20px;
+            font-weight: bold;
+            fill: #2E86AB;
         }
 
         /* Legend */
@@ -168,10 +178,9 @@
             padding: 30px;
             background: #f9f9f9;
             border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
 
         .legend-item {
@@ -181,14 +190,14 @@
         }
 
         .legend-box {
-            width: 40px;
-            height: 30px;
+            width: 50px;
+            height: 35px;
             border-radius: 5px;
             border: 2px solid #333;
         }
 
         .legend-text {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
         }
 
@@ -198,13 +207,13 @@
         }
 
         .controls button {
-            padding: 12px 30px;
+            padding: 14px 35px;
             margin: 0 10px;
             border: none;
             border-radius: 8px;
             background: #2E86AB;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
@@ -215,328 +224,313 @@
             transform: translateY(-2px);
         }
 
-        /* Key Properties Section */
-        .properties-section {
+        /* Summary section */
+        .summary {
             margin-top: 50px;
             padding: 30px;
-            background: #f0f8ff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 10px;
-            border-left: 6px solid #2E86AB;
+            color: white;
         }
 
-        .properties-section h2 {
-            color: #2E86AB;
-            font-size: 28px;
+        .summary h2 {
+            font-size: 32px;
             margin-bottom: 20px;
         }
 
-        .properties-grid {
+        .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            gap: 25px;
+            margin-top: 25px;
         }
 
-        .property-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #2E86AB;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        .summary-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
         }
 
-        .property-card h3 {
-            color: #2E86AB;
-            font-size: 18px;
-            margin-bottom: 8px;
+        .summary-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #00d4ff;
         }
 
-        .property-card .type {
-            color: #999;
-            font-size: 13px;
-            font-style: italic;
-            margin-bottom: 8px;
-        }
-
-        .property-card p {
-            color: #555;
-            font-size: 15px;
-            line-height: 1.5;
+        .summary-card p {
+            font-size: 16px;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔄 Lead Nurturing Automation Flowchart</h1>
-        <p class="subtitle">Complete lifecycle flow showing track progression, CRM sync, and checkpoint resumption</p>
+        <h1>🔄 Lead Nurturing Lifecycle Automation Flowchart</h1>
+        <p class="subtitle">Clear visual flow showing track progression, checkpoint system, and CRM integration</p>
 
         <div class="flowchart-container">
-            <svg width="1320" height="2400" xmlns="http://www.w3.org/2000/svg">
+            <svg width="1700" height="3400" xmlns="http://www.w3.org/2000/svg">
                 <!-- Define arrow markers -->
                 <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                        <polygon points="0 0, 10 3, 0 6" fill="#333" />
+                    <marker id="arrowhead" markerWidth="12" markerHeight="12" refX="10" refY="3" orient="auto">
+                        <polygon points="0 0, 12 3, 0 6" fill="#333" />
                     </marker>
-                    <marker id="arrowhead-yes" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                        <polygon points="0 0, 10 3, 0 6" fill="#4CAF50" />
+                    <marker id="arrowhead-yes" markerWidth="12" markerHeight="12" refX="10" refY="3" orient="auto">
+                        <polygon points="0 0, 12 3, 0 6" fill="#4CAF50" />
                     </marker>
-                    <marker id="arrowhead-no" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                        <polygon points="0 0, 10 3, 0 6" fill="#C73E1D" />
+                    <marker id="arrowhead-no" markerWidth="12" markerHeight="12" refX="10" refY="3" orient="auto">
+                        <polygon points="0 0, 12 3, 0 6" fill="#C73E1D" />
                     </marker>
                 </defs>
 
+                <!-- Background sections -->
+                <rect x="0" y="0" width="1700" height="500" fill="#e8f4f8" opacity="0.3"/>
+                <text x="850" y="30" class="section-label" text-anchor="middle" font-size="24">PHASE 1: ENTRY &amp; INITIALIZATION</text>
+
+                <rect x="0" y="550" width="1700" height="600" fill="#fef3e8" opacity="0.3"/>
+                <text x="850" y="580" class="section-label" text-anchor="middle" font-size="24">PHASE 2: TRACK ASSIGNMENT (4 Nurture Tracks)</text>
+
+                <rect x="0" y="1200" width="1700" height="400" fill="#e8f4f8" opacity="0.3"/>
+                <text x="850" y="1230" class="section-label" text-anchor="middle" font-size="24">PHASE 3: NURTURE SEND &amp; CHECKPOINT</text>
+
+                <rect x="0" y="1650" width="1700" height="800" fill="#ffe8e8" opacity="0.3"/>
+                <text x="850" y="1680" class="section-label" text-anchor="middle" font-size="24">PHASE 4: CRM CHECKS &amp; PAUSE LOGIC</text>
+
+                <rect x="0" y="2500" width="1700" height="600" fill="#e8ffe8" opacity="0.3"/>
+                <text x="850" y="2530" class="section-label" text-anchor="middle" font-size="24">PHASE 5: ENGAGEMENT CHECK &amp; PROGRESSION</text>
+
+                <rect x="0" y="3150" width="1700" height="250" fill="#f0f0f0" opacity="0.3"/>
+                <text x="850" y="3180" class="section-label" text-anchor="middle" font-size="24">PHASE 6: COMPLETION</text>
+
+                <!-- ========== PHASE 1: ENTRY ========== -->
+
                 <!-- START -->
-                <ellipse cx="660" cy="40" rx="120" ry="35" class="start-end"/>
-                <text x="660" y="48" class="start-end-text">START</text>
+                <ellipse cx="850" cy="100" rx="140" ry="45" class="start-end"/>
+                <text x="850" y="110" class="start-end-text">START</text>
 
-                <!-- Arrow down -->
-                <line x1="660" y1="75" x2="660" y2="130" class="arrow"/>
+                <line x1="850" y1="145" x2="850" y2="200" class="arrow"/>
 
-                <!-- New Contact Enters System -->
-                <rect x="510" y="130" width="300" height="70" rx="10" class="process-box"/>
-                <text x="660" y="155" class="process-text">New Contact Enters</text>
-                <text x="660" y="175" class="process-text">Marketing Automation</text>
+                <!-- New Contact -->
+                <rect x="650" y="200" width="400" height="80" rx="10" class="process-box"/>
+                <text x="850" y="235" class="process-text">New Contact Enters</text>
+                <text x="850" y="260" class="process-text">Marketing Automation System</text>
 
-                <!-- Arrow down -->
-                <line x1="660" y1="200" x2="660" y2="250" class="arrow"/>
+                <line x1="850" y1="280" x2="850" y2="340" class="arrow"/>
 
-                <!-- Initialize Properties -->
-                <rect x="510" y="250" width="300" height="90" rx="10" class="checkpoint-box"/>
-                <text x="660" y="275" class="track-text">Initialize Properties</text>
-                <text x="660" y="295" class="process-text">track_state = Active</text>
-                <text x="660" y="315" class="process-text">track_checkpoint = 1</text>
+                <!-- Initialize -->
+                <rect x="650" y="340" width="400" height="100" rx="10" class="checkpoint-box"/>
+                <text x="850" y="375" class="track-text">Initialize Properties</text>
+                <text x="850" y="400" class="process-text">track_state = Active</text>
+                <text x="850" y="425" class="process-text">track_checkpoint = 1</text>
 
-                <!-- Arrow down -->
-                <line x1="660" y1="340" x2="660" y2="400" class="arrow"/>
+                <line x1="850" y1="440" x2="850" y2="520" class="arrow"/>
 
-                <!-- DECISION: Evaluate Score -->
-                <g>
-                    <polygon points="660,400 860,475 660,550 460,475" class="decision-box"/>
-                    <text x="660" y="465" class="decision-text">Evaluate</text>
-                    <text x="660" y="485" class="decision-text">score_current &amp;</text>
-                    <text x="660" y="505" class="decision-text">velocity_7d</text>
-                </g>
+                <!-- ========== PHASE 2: TRACK ASSIGNMENT ========== -->
 
-                <!-- Arrows to 4 tracks -->
-                <!-- Awareness -->
-                <line x1="560" y1="425" x2="200" y2="425" class="arrow"/>
-                <line x1="200" y1="425" x2="200" y2="620" class="arrow"/>
-                <text x="380" y="420" class="arrow-label">Low Score</text>
+                <!-- Score Decision -->
+                <polygon points="850,620 1050,720 850,820 650,720" class="decision-box"/>
+                <text x="850" y="705" class="decision-text">Evaluate Score</text>
+                <text x="850" y="730" class="decision-text">score_current &amp;</text>
+                <text x="850" y="755" class="decision-text">velocity_7d</text>
 
-                <!-- Research -->
-                <line x1="580" y1="450" x2="430" y2="600" class="arrow"/>
-                <text x="480" y="520" class="arrow-label">Medium</text>
+                <!-- Track 1: Awareness (Far Left) -->
+                <line x1="700" y1="660" x2="200" y2="660" class="arrow"/>
+                <text x="450" y="650" class="arrow-label">Low Score</text>
+                <line x1="200" y1="660" x2="200" y2="920" class="arrow"/>
 
-                <!-- Qualification -->
-                <line x1="740" y1="450" x2="890" y2="600" class="arrow"/>
-                <text x="820" y="520" class="arrow-label">High</text>
+                <rect x="50" y="920" width="300" height="100" rx="10" class="track-box"/>
+                <text x="200" y="955" class="track-text">TRACK 1:</text>
+                <text x="200" y="980" class="track-text">AWARENESS</text>
+                <text x="200" y="1005" class="process-text">track_current = "Awareness"</text>
 
-                <!-- Hot -->
-                <line x1="760" y1="425" x2="1120" y2="425" class="arrow"/>
-                <line x1="1120" y1="425" x2="1120" y2="620" class="arrow"/>
-                <text x="940" y="420" class="arrow-label">Very High</text>
+                <line x1="200" y1="1020" x2="200" y2="1080" class="arrow"/>
 
-                <!-- 4 TRACK BOXES -->
-                <!-- Awareness Track -->
-                <rect x="80" y="620" width="240" height="90" rx="10" class="track-box"/>
-                <text x="200" y="650" class="track-text">AWARENESS TRACK</text>
-                <text x="200" y="670" class="process-text">track_current =</text>
-                <text x="200" y="690" class="process-text">"Awareness"</text>
+                <!-- Track 2: Research (Left) -->
+                <line x1="750" y1="680" x2="500" y2="680" class="arrow"/>
+                <text x="625" y="670" class="arrow-label">Medium</text>
+                <line x1="500" y1="680" x2="500" y2="920" class="arrow"/>
 
-                <!-- Research Track -->
-                <rect x="350" y="620" width="240" height="90" rx="10" class="track-box"/>
-                <text x="470" y="650" class="track-text">RESEARCH TRACK</text>
-                <text x="470" y="670" class="process-text">track_current =</text>
-                <text x="470" y="690" class="process-text">"Research"</text>
+                <rect x="350" y="920" width="300" height="100" rx="10" class="track-box"/>
+                <text x="500" y="955" class="track-text">TRACK 2:</text>
+                <text x="500" y="980" class="track-text">RESEARCH</text>
+                <text x="500" y="1005" class="process-text">track_current = "Research"</text>
 
-                <!-- Qualification Track -->
-                <rect x="620" y="620" width="240" height="90" rx="10" class="track-box"/>
-                <text x="740" y="650" class="track-text">QUALIFICATION</text>
-                <text x="740" y="670" class="process-text">track_current =</text>
-                <text x="740" y="690" class="process-text">"Qualification"</text>
+                <line x1="500" y1="1020" x2="500" y2="1080" class="arrow"/>
 
-                <!-- Hot Track -->
-                <rect x="890" y="620" width="240" height="90" rx="10" class="track-box"/>
-                <text x="1010" y="650" class="track-text">HOT TRACK</text>
-                <text x="1010" y="670" class="process-text">track_current =</text>
-                <text x="1010" y="690" class="process-text">"Hot"</text>
+                <!-- Track 3: Qualification (Right) -->
+                <line x1="950" y1="680" x2="1200" y2="680" class="arrow"/>
+                <text x="1075" y="670" class="arrow-label">High</text>
+                <line x1="1200" y1="680" x2="1200" y2="920" class="arrow"/>
 
-                <!-- All tracks converge -->
-                <line x1="200" y1="710" x2="200" y2="770" class="arrow"/>
-                <line x1="470" y1="710" x2="470" y2="770" class="arrow"/>
-                <line x1="740" y1="710" x2="740" y2="770" class="arrow"/>
-                <line x1="1010" y1="710" x2="1010" y2="770" class="arrow"/>
+                <rect x="1050" y="920" width="300" height="100" rx="10" class="track-box"/>
+                <text x="1200" y="955" class="track-text">TRACK 3:</text>
+                <text x="1200" y="980" class="track-text">QUALIFICATION</text>
+                <text x="1200" y="1005" class="process-text">track_current = "Qualification"</text>
 
-                <line x1="200" y1="770" x2="660" y2="770" class="arrow"/>
-                <line x1="470" y1="770" x2="660" y2="770" class="arrow"/>
-                <line x1="740" y1="770" x2="660" y2="770" class="arrow"/>
-                <line x1="1010" y1="770" x2="660" y2="770" class="arrow"/>
+                <line x1="1200" y1="1020" x2="1200" y2="1080" class="arrow"/>
 
-                <!-- Arrow down -->
-                <line x1="660" y1="770" x2="660" y2="820" class="arrow"/>
+                <!-- Track 4: Hot (Far Right) -->
+                <line x1="1000" y1="660" x2="1500" y2="660" class="arrow"/>
+                <text x="1250" y="650" class="arrow-label">Very High</text>
+                <line x1="1500" y1="660" x2="1500" y2="920" class="arrow"/>
 
-                <!-- Send Nurture Message -->
-                <rect x="510" y="820" width="300" height="90" rx="10" class="process-box"/>
-                <text x="660" y="850" class="process-text">Send Nurture Message</text>
-                <text x="660" y="870" class="process-text">at Module Index =</text>
-                <text x="660" y="890" class="process-text">track_checkpoint</text>
+                <rect x="1350" y="920" width="300" height="100" rx="10" class="track-box"/>
+                <text x="1500" y="955" class="track-text">TRACK 4:</text>
+                <text x="1500" y="980" class="track-text">HOT</text>
+                <text x="1500" y="1005" class="process-text">track_current = "Hot"</text>
 
-                <!-- Arrow down -->
-                <line x1="660" y1="910" x2="660" y2="960" class="arrow"/>
+                <line x1="1500" y1="1020" x2="1500" y2="1080" class="arrow"/>
+
+                <!-- All converge to center -->
+                <line x1="200" y1="1080" x2="850" y2="1080" class="arrow"/>
+                <line x1="500" y1="1080" x2="850" y2="1080" class="arrow"/>
+                <line x1="1200" y1="1080" x2="850" y2="1080" class="arrow"/>
+                <line x1="1500" y1="1080" x2="850" y2="1080" class="arrow"/>
+
+                <line x1="850" y1="1080" x2="850" y2="1260" class="arrow"/>
+
+                <!-- ========== PHASE 3: NURTURE SEND ========== -->
+
+                <!-- Send Message -->
+                <rect x="650" y="1260" width="400" height="100" rx="10" class="process-box"/>
+                <text x="850" y="1295" class="process-text">Send Nurture Message</text>
+                <text x="850" y="1320" class="process-text">at Module Index =</text>
+                <text x="850" y="1345" class="process-text">track_checkpoint</text>
+
+                <line x1="850" y1="1360" x2="850" y2="1420" class="arrow"/>
 
                 <!-- Increment Checkpoint -->
-                <rect x="510" y="960" width="300" height="70" rx="10" class="checkpoint-box"/>
-                <text x="660" y="985" class="track-text">Workflow D: Increment</text>
-                <text x="660" y="1005" class="track-text">track_checkpoint + 1</text>
+                <rect x="650" y="1420" width="400" height="90" rx="10" class="checkpoint-box"/>
+                <text x="850" y="1455" class="track-text">Workflow D:</text>
+                <text x="850" y="1480" class="track-text">Increment Checkpoint</text>
+                <text x="850" y="1505" class="process-text">(track_checkpoint + 1)</text>
 
-                <!-- Arrow down -->
-                <line x1="660" y1="1030" x2="660" y2="1090" class="arrow"/>
+                <line x1="850" y1="1510" x2="850" y2="1590" class="arrow"/>
 
-                <!-- DECISION: CRM Status Change? -->
-                <g>
-                    <polygon points="660,1090 860,1165 660,1240 460,1165" class="decision-box"/>
-                    <text x="660" y="1150" class="decision-text">CRM Status</text>
-                    <text x="660" y="1170" class="decision-text">Changed?</text>
-                    <text x="660" y="1190" class="decision-text">(SQL/Deal/etc)</text>
-                </g>
+                <!-- ========== PHASE 4: CRM CHECKS ========== -->
 
-                <!-- YES - Goes right to CRM Pause -->
-                <line x1="860" y1="1165" x2="1050" y2="1165" class="arrow-yes"/>
-                <text x="920" y="1155" class="arrow-label" fill="#4CAF50">YES</text>
+                <!-- CRM Status Check -->
+                <polygon points="850,1710 1050,1810 850,1910 650,1810" class="decision-box"/>
+                <text x="850" y="1795" class="decision-text">CRM Status</text>
+                <text x="850" y="1820" class="decision-text">Changed?</text>
+                <text x="850" y="1845" class="decision-text">(SQL/Deal/Customer)</text>
 
-                <!-- CRM Pause Box -->
-                <rect x="1050" y="1110" width="220" height="110" rx="10" class="crm-box"/>
-                <text x="1160" y="1140" class="crm-text">Workflow B:</text>
-                <text x="1160" y="1160" class="crm-text">PAUSE Nurture</text>
-                <text x="1160" y="1180" class="crm-text">track_state =</text>
-                <text x="1160" y="1200" class="crm-text">Paused</text>
+                <!-- YES - Right side to CRM Pause -->
+                <line x1="1050" y1="1810" x2="1250" y2="1810" class="arrow-yes"/>
+                <text x="1120" y="1800" class="arrow-label" fill="#4CAF50">YES</text>
 
-                <!-- Arrow down from CRM box -->
-                <line x1="1160" y1="1220" x2="1160" y2="1280" class="arrow"/>
+                <!-- CRM Pause -->
+                <rect x="1250" y="1730" width="350" height="120" rx="10" class="crm-box"/>
+                <text x="1425" y="1770" class="crm-text">Workflow B:</text>
+                <text x="1425" y="1795" class="crm-text">PAUSE Nurture</text>
+                <text x="1425" y="1820" class="crm-text">track_state = Paused</text>
 
-                <!-- DECISION: Recycled? -->
-                <g>
-                    <polygon points="1160,1280 1330,1355 1160,1430 990,1355" class="decision-box"/>
-                    <text x="1160" y="1345" class="decision-text">Recycled or</text>
-                    <text x="1160" y="1365" class="decision-text">Deal Lost?</text>
-                </g>
+                <line x1="1425" y1="1850" x2="1425" y2="1930" class="arrow"/>
 
-                <!-- YES - Re-entry Logic -->
-                <line x1="1160" y1="1430" x2="1160" y2="1490" class="arrow-yes"/>
-                <text x="1180" y="1460" class="arrow-label" fill="#4CAF50">YES</text>
+                <!-- Recycle Decision -->
+                <polygon points="1425,2030 1600,2120 1425,2210 1250,2120" class="decision-box"/>
+                <text x="1425" y="2110" class="decision-text">Recycled or</text>
+                <text x="1425" y="2135" class="decision-text">Deal Lost?</text>
 
-                <!-- Wait for Re-entry Date -->
-                <rect x="1020" y="1490" width="280" height="90" rx="10" class="process-box"/>
-                <text x="1160" y="1515" class="process-text">Workflow C: Wait for</text>
-                <text x="1160" y="1535" class="process-text">reentry_eligibility_date</text>
-                <text x="1160" y="1555" class="process-text">+ crm_open_opportunity</text>
-                <text x="1160" y="1575" class="process-text">= false</text>
+                <!-- YES - Re-entry -->
+                <line x1="1425" y1="2210" x2="1425" y2="2280" class="arrow-yes"/>
+                <text x="1450" y="2245" class="arrow-label" fill="#4CAF50">YES</text>
 
-                <!-- Arrow down -->
-                <line x1="1160" y1="1580" x2="1160" y2="1640" class="arrow"/>
+                <!-- Wait for Re-entry -->
+                <rect x="1250" y="2280" width="350" height="110" rx="10" class="process-box"/>
+                <text x="1425" y="2310" class="process-text">Workflow C:</text>
+                <text x="1425" y="2335" class="process-text">Wait for reentry_eligibility_date</text>
+                <text x="1425" y="2360" class="process-text">AND crm_open_opportunity</text>
+                <text x="1425" y="2385" class="process-text">= false</text>
+
+                <line x1="1425" y1="2390" x2="1425" y2="2460" class="arrow"/>
 
                 <!-- Reactivate -->
-                <rect x="1020" y="1640" width="280" height="70" rx="10" class="success-box"/>
-                <text x="1160" y="1665" class="start-end-text">REACTIVATE</text>
-                <text x="1160" y="1685" class="start-end-text">track_state = Active</text>
+                <rect x="1250" y="2460" width="350" height="90" rx="10" class="success-box"/>
+                <text x="1425" y="2495" class="start-end-text">REACTIVATE</text>
+                <text x="1425" y="2525" class="start-end-text">track_state = Active</text>
 
-                <!-- Arrow loops back up -->
-                <line x1="1020" y1="1675" x2="920" y2="1675" class="arrow"/>
-                <line x1="920" y1="1675" x2="920" y2="865" class="arrow"/>
-                <line x1="920" y1="865" x2="810" y2="865" class="arrow"/>
-                <text x="870" y="1260" class="arrow-label">Resume at</text>
-                <text x="870" y="1280" class="arrow-label">Checkpoint</text>
+                <!-- Loop back -->
+                <line x1="1250" y1="2505" x2="1150" y2="2505" class="arrow"/>
+                <line x1="1150" y1="2505" x2="1150" y2="1310" class="arrow"/>
+                <line x1="1150" y1="1310" x2="1050" y2="1310" class="arrow"/>
+                <text x="1180" y="1900" class="arrow-label">Resume at</text>
+                <text x="1180" y="1925" class="arrow-label">Saved Checkpoint</text>
 
-                <!-- NO from Recycled decision - stays paused -->
-                <line x1="990" y1="1355" x2="920" y2="1355" class="arrow-no"/>
-                <text x="940" y="1345" class="arrow-label" fill="#C73E1D">NO</text>
-                <text x="860" y="1365" class="arrow-label" fill="#C73E1D">Stay Paused</text>
+                <!-- NO from Recycle - Stay Paused -->
+                <line x1="1250" y1="2120" x2="1100" y2="2120" class="arrow-no"/>
+                <text x="1150" y="2110" class="arrow-label" fill="#C73E1D">NO</text>
+                <ellipse cx="1050" cy="2120" rx="100" ry="40" class="crm-box"/>
+                <text x="1050" y="2130" class="crm-text">Stay Paused</text>
 
-                <!-- NO from CRM Status Change - Continue -->
-                <line x1="660" y1="1240" x2="660" y2="1310" class="arrow-no"/>
-                <text x="680" y="1270" class="arrow-label" fill="#4CAF50">NO</text>
+                <!-- NO from CRM Status - Continue -->
+                <line x1="850" y1="1910" x2="850" y2="2000" class="arrow-no"/>
+                <text x="880" y="1955" class="arrow-label" fill="#4CAF50">NO - Continue</text>
 
-                <!-- DECISION: Engagement Increased? -->
-                <g>
-                    <polygon points="660,1310 830,1385 660,1460 490,1385" class="decision-box"/>
-                    <text x="660" y="1375" class="decision-text">Engagement</text>
-                    <text x="660" y="1395" class="decision-text">Increased?</text>
-                </g>
+                <!-- ========== PHASE 5: ENGAGEMENT & PROGRESSION ========== -->
 
-                <!-- YES - Workflow A: Update Track -->
-                <line x1="490" y1="1385" x2="340" y2="1385" class="arrow-yes"/>
-                <text x="400" y="1375" class="arrow-label" fill="#4CAF50">YES</text>
+                <!-- Engagement Check -->
+                <polygon points="850,2100 1025,2190 850,2280 675,2190" class="decision-box"/>
+                <text x="850" y="2180" class="decision-text">Engagement</text>
+                <text x="850" y="2205" class="decision-text">Increased?</text>
 
-                <!-- Update Track Box -->
-                <rect x="50" y="1330" width="290" height="110" rx="10" class="process-box"/>
-                <text x="195" y="1360" class="process-text">Workflow A:</text>
-                <text x="195" y="1380" class="process-text">Update track_current</text>
-                <text x="195" y="1400" class="process-text">Update</text>
-                <text x="195" y="1420" class="process-text">highest_track_reached</text>
+                <!-- YES - Left side: Update Track -->
+                <line x1="675" y1="2190" x2="400" y2="2190" class="arrow-yes"/>
+                <text x="537" y="2180" class="arrow-label" fill="#4CAF50">YES</text>
 
-                <!-- Arrow loops back to score decision -->
-                <line x1="195" y1="1330" x2="195" y2="1280" class="arrow"/>
-                <line x1="195" y1="1280" x2="195" y2="475" class="arrow"/>
-                <line x1="195" y1="475" x2="460" y2="475" class="arrow"/>
-                <text x="100" y="850" class="arrow-label">Re-evaluate</text>
+                <rect x="100" y="2120" width="300" height="120" rx="10" class="process-box"/>
+                <text x="250" y="2155" class="process-text">Workflow A:</text>
+                <text x="250" y="2180" class="process-text">Update track_current</text>
+                <text x="250" y="2205" class="process-text">Update</text>
+                <text x="250" y="2230" class="process-text">highest_track_reached</text>
 
-                <!-- NO from Engagement - Continue cycle -->
-                <line x1="660" y1="1460" x2="660" y2="1530" class="arrow-no"/>
-                <text x="680" y="1490" class="arrow-label" fill="#4CAF50">NO</text>
+                <!-- Loop back to score evaluation -->
+                <line x1="250" y1="2120" x2="250" y2="720" class="arrow"/>
+                <line x1="250" y1="720" x2="650" y2="720" class="arrow"/>
+                <text x="270" y="1400" class="arrow-label">Re-evaluate</text>
+                <text x="270" y="1425" class="arrow-label">Track</text>
+
+                <!-- NO - Continue -->
+                <line x1="850" y1="2280" x2="850" y2="2370" class="arrow-no"/>
+                <text x="880" y="2325" class="arrow-label" fill="#4CAF50">NO</text>
 
                 <!-- Wait for Next Send -->
-                <rect x="510" y="1530" width="300" height="70" rx="10" class="process-box"/>
-                <text x="660" y="1555" class="process-text">Wait for Next Send</text>
-                <text x="660" y="1575" class="process-text">(Time Delay)</text>
+                <rect x="650" y="2370" width="400" height="80" rx="10" class="process-box"/>
+                <text x="850" y="2405" class="process-text">Wait for Next Send</text>
+                <text x="850" y="2430" class="process-text">(Time Delay)</text>
 
-                <!-- Arrow loops back to send message -->
-                <line x1="660" y1="1600" x2="660" y2="1650" class="arrow"/>
-                <line x1="660" y1="1650" x2="400" y2="1650" class="arrow"/>
-                <line x1="400" y1="1650" x2="400" y2="865" class="arrow"/>
-                <line x1="400" y1="865" x2="510" y2="865" class="arrow"/>
-                <text x="300" y="1250" class="arrow-label">Continue</text>
-                <text x="300" y="1270" class="arrow-label">Sequence</text>
+                <!-- Check completion -->
+                <line x1="850" y1="2450" x2="850" y2="2530" class="arrow"/>
 
-                <!-- DECISION: Track Completed? -->
-                <g>
-                    <polygon points="660,1750 830,1825 660,1900 490,1825" class="decision-box"/>
-                    <text x="660" y="1815" class="decision-text">All Modules</text>
-                    <text x="660" y="1835" class="decision-text">Completed?</text>
-                </g>
+                <!-- Completion Check -->
+                <polygon points="850,2630 1025,2720 850,2810 675,2720" class="decision-box"/>
+                <text x="850" y="2710" class="decision-text">All Modules</text>
+                <text x="850" y="2735" class="decision-text">Completed?</text>
 
-                <!-- Arrow from wait to completed check -->
-                <line x1="550" y1="1650" x2="550" y2="1825" class="arrow"/>
-                <line x1="550" y1="1825" x2="490" y2="1825" class="arrow"/>
+                <!-- NO - Loop back -->
+                <line x1="1025" y1="2720" x2="1100" y2="2720" class="arrow-no"/>
+                <text x="1040" y="2710" class="arrow-label" fill="#C73E1D">NO</text>
+                <line x1="1100" y1="2720" x2="1100" y2="1310" class="arrow-no"/>
+                <text x="1120" y="2000" class="arrow-label" fill="#C73E1D">Continue</text>
+                <text x="1120" y="2025" class="arrow-label" fill="#C73E1D">Nurture</text>
 
-                <!-- YES - Mark Complete -->
-                <line x1="660" y1="1900" x2="660" y2="1970" class="arrow-yes"/>
-                <text x="680" y="1930" class="arrow-label" fill="#4CAF50">YES</text>
+                <!-- YES - Complete -->
+                <line x1="850" y1="2810" x2="850" y2="2900" class="arrow-yes"/>
+                <text x="880" y="2855" class="arrow-label" fill="#4CAF50">YES</text>
+
+                <!-- ========== PHASE 6: COMPLETION ========== -->
 
                 <!-- Mark Complete -->
-                <rect x="510" y="1970" width="300" height="70" rx="10" class="success-box"/>
-                <text x="660" y="1995" class="start-end-text">Mark Track Complete</text>
-                <text x="660" y="2015" class="start-end-text">track_state = Completed</text>
+                <rect x="650" y="2900" width="400" height="90" rx="10" class="success-box"/>
+                <text x="850" y="2935" class="start-end-text">Mark Track Complete</text>
+                <text x="850" y="2965" class="start-end-text">track_state = Completed</text>
 
-                <!-- Arrow to END -->
-                <line x1="660" y1="2040" x2="660" y2="2110" class="arrow"/>
+                <line x1="850" y1="2990" x2="850" y2="3070" class="arrow"/>
 
                 <!-- END -->
-                <ellipse cx="660" cy="2150" rx="120" ry="35" class="start-end"/>
-                <text x="660" y="2158" class="start-end-text">END</text>
-
-                <!-- NO from completed - goes back -->
-                <line x1="830" y1="1825" x2="900" y2="1825" class="arrow-no"/>
-                <line x1="900" y1="1825" x2="900" y2="1565" class="arrow-no"/>
-                <line x1="900" y1="1565" x2="810" y2="1565" class="arrow-no"/>
-                <text x="910" y="1690" class="arrow-label" fill="#C73E1D">NO</text>
-
-                <!-- Key Labels on side -->
-                <text x="30" y="100" style="font-size: 16px; font-weight: bold; fill: #333;">ENTRY</text>
-                <text x="30" y="475" style="font-size: 16px; font-weight: bold; fill: #333;">TRACK ASSIGNMENT</text>
-                <text x="30" y="865" style="font-size: 16px; font-weight: bold; fill: #333;">NURTURE SEND</text>
-                <text x="30" y="1165" style="font-size: 16px; font-weight: bold; fill: #333;">CRM CHECKS</text>
-                <text x="30" y="1385" style="font-size: 16px; font-weight: bold; fill: #333;">PROGRESSION</text>
-                <text x="30" y="1825" style="font-size: 16px; font-weight: bold; fill: #333;">COMPLETION</text>
+                <ellipse cx="850" cy="3130" rx="140" ry="45" class="start-end"/>
+                <text x="850" y="3140" class="start-end-text">END</text>
 
             </svg>
         </div>
@@ -557,7 +551,7 @@
             </div>
             <div class="legend-item">
                 <div class="legend-box" style="background: #C73E1D;"></div>
-                <span class="legend-text">CRM Control</span>
+                <span class="legend-text">CRM Control / Pause</span>
             </div>
             <div class="legend-item">
                 <div class="legend-box" style="background: #592E83;"></div>
@@ -565,7 +559,7 @@
             </div>
             <div class="legend-item">
                 <div class="legend-box" style="background: #4CAF50;"></div>
-                <span class="legend-text">Success/Start/End</span>
+                <span class="legend-text">Success / Active State</span>
             </div>
         </div>
 
@@ -575,70 +569,38 @@
             <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})">⬆️ Back to Top</button>
         </div>
 
-        <!-- Key Properties Section -->
-        <div class="properties-section">
-            <h2>🗂️ 10 Core Custom Properties</h2>
-            <p style="color: #666; margin-bottom: 20px;">These fields power the entire automation system shown in the flowchart above</p>
-
-            <div class="properties-grid">
-                <div class="property-card">
-                    <h3>📊 track_current</h3>
-                    <div class="type">Dropdown: Awareness, Research, Qualification, Hot</div>
-                    <p>Controls which nurture stream the contact is enrolled in</p>
+        <!-- Summary -->
+        <div class="summary">
+            <h2>🎯 How The System Works - 6 Phases</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h3>Phase 1: Entry & Initialization</h3>
+                    <p>New contacts enter the system and are initialized with track_state = Active and track_checkpoint = 1</p>
                 </div>
 
-                <div class="property-card">
-                    <h3>📍 track_checkpoint</h3>
-                    <div class="type">Number</div>
-                    <p>Stores the module index - enables resume from exact position</p>
+                <div class="summary-card">
+                    <h3>Phase 2: Track Assignment</h3>
+                    <p>Score evaluation routes contacts to one of 4 tracks: Awareness, Research, Qualification, or Hot based on engagement level</p>
                 </div>
 
-                <div class="property-card">
-                    <h3>🏆 highest_track_reached</h3>
-                    <div class="type">Dropdown</div>
-                    <p>Prevents regression by recording highest track entered</p>
+                <div class="summary-card">
+                    <h3>Phase 3: Nurture Send & Checkpoint</h3>
+                    <p>System sends nurture message at the checkpoint index, then Workflow D increments the checkpoint by 1</p>
                 </div>
 
-                <div class="property-card">
-                    <h3>⚙️ track_state</h3>
-                    <div class="type">Dropdown: Active, Paused, Completed</div>
-                    <p>Controls whether nurture sequences are currently running</p>
+                <div class="summary-card">
+                    <h3>Phase 4: CRM Checks & Pause Logic</h3>
+                    <p>Workflow B checks CRM status. If SQL/Deal/Customer, pauses nurture. Workflow C handles re-entry after recycling</p>
                 </div>
 
-                <div class="property-card">
-                    <h3>📝 track_reason</h3>
-                    <div class="type">Text</div>
-                    <p>Documents why a track was paused, resumed, or changed</p>
+                <div class="summary-card">
+                    <h3>Phase 5: Engagement Check</h3>
+                    <p>Workflow A monitors engagement. If increased, updates track and re-evaluates. Otherwise, waits for next send</p>
                 </div>
 
-                <div class="property-card">
-                    <h3>🔄 crm_lifecycle_stage</h3>
-                    <div class="type">Dropdown</div>
-                    <p>Mirrors CRM lifecycle status via bidirectional sync</p>
-                </div>
-
-                <div class="property-card">
-                    <h3>💼 crm_open_opportunity</h3>
-                    <div class="type">Boolean: Yes/No</div>
-                    <p>Indicates if an active deal is associated with contact</p>
-                </div>
-
-                <div class="property-card">
-                    <h3>📅 reentry_eligibility_date</h3>
-                    <div class="type">Date</div>
-                    <p>Sets future re-engagement date after recycle/disqualification</p>
-                </div>
-
-                <div class="property-card">
-                    <h3>📈 score_current</h3>
-                    <div class="type">Number</div>
-                    <p>Most recent engagement/behavior-based lead score</p>
-                </div>
-
-                <div class="property-card">
-                    <h3>⚡ velocity_7d</h3>
-                    <div class="type">Number</div>
-                    <p>Measures 7-day engagement acceleration for triggers</p>
+                <div class="summary-card">
+                    <h3>Phase 6: Completion</h3>
+                    <p>When all modules are completed, marks track_state = Completed and contact exits the nurture cycle</p>
                 </div>
             </div>
         </div>
